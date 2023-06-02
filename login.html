@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>学生管理系统登录</title>
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<!--必要样式-->
+		<link rel="stylesheet" type="text/css" href="css/component.css" />
+		<script src="js/global.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			.bxs-row {
+				margin-bottom: 12px;
+			}
+			
+			.logo-box {
+				width: 404px;
+				margin: 120px auto;
+				border: 1px solid #e5e5e5;
+				border-radius: 4px;
+				box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+				position: relative;
+				overflow: hidden;
+				height: 360px;
+			}
+			
+			.login {
+				position: absolute;
+				width: 320px;
+				left: 0;
+				top: 0;
+				padding: 42px 42px 36px;
+				transition: all 0.8s;
+			}
+			
+			.username,
+			.password,
+			.btn {
+				height: 44px;
+				width: 100%;
+				padding: 0 10px;
+				border: 1px solid #9da3a6;
+				background: #fff;
+				text-overflow: ellipsis;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				-khtml-border-radius: 4px;
+				border-radius: 4px;
+				-webkit-box-shadow: none;
+				-moz-box-shadow: none;
+				box-shadow: none;
+				color: #000;
+				font-size: 1em;
+				font-family: Helvetica, Arial, sans-serif;
+				font-weight: 400;
+				direction: ltr;
+				font-size: 13px;
+			}
+			
+			.submit {
+				background-color: #0070ba;
+				color: #fff;
+				border: 1px solid #0070ba;
+			}
+			
+			.submit:hover {
+				background-color: #005ea6;
+			}
+			
+			.verBox {
+				position: absolute;
+				width: 100%;
+				text-align: center;
+				left: 404px;
+				top: 0;
+				opacity: 0;
+				transition: all 0.8s;
+				padding-top: 55px;
+			}
+			
+			.err {
+				margin: 12px 0 0;
+				line-height: 12px;
+				height: 12px;
+				font-size: 12px;
+				color: red;
+			}
+			/*遮罩层样式*/
+			#cover{ 
+			    position:absolute;left:0px;top:0px;
+			    background:rgba(0, 0, 0, 0.4);
+			    width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+			    height:100%;
+			    filter:alpha(opacity=50);  /*设置透明度为60%*/
+			    opacity:0.6;  /*非IE浏览器下设置透明度为60%*/
+			    display:none; 
+			    z-Index:999;  
+			}
+			#modal{ 
+			    position:absolute;
+			    width:500px;
+			    height:300px;
+			    top:170px;
+			    left:600px;
+			    display:none;
+			    cursor:pointer;
+			    z-Index:9999;  
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container demo-1">
+			<div class="content">
+				<div id="large-header" class="large-header">
+					<canvas id="demo-canvas"></canvas>
+					<div class="logo_box">
+						<form action="#" name="f" method="post">
+							<h3>欢迎你</h3>
+							<div class="input_outer">
+								<span class="u_user"></span>
+								<input id="logname" class="text" style="color: #FFFFFF !important" autocomplete="off" type="text" placeholder="请输入账户">
+							</div>
+							<div class="input_outer">
+								<span class="us_uer"></span>
+								<input id="logpass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" autocomplete="off" type="password" placeholder="请输入密码">
+							</div>
+							<div class="mb2">
+								<a class="act-but submit" href="javascript:;" id="loginBtn" style="color: #FFFFFF">登录</a>
+							</div>
+							<div class="mb2" style="position: absolute; margin-left: 260px;">
+								<a href="resetpwd/demo.html" style="color: #FFFFFF;">忘记密码？</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--遮罩层-->
+		<div id="cover"></div>
+		<!--遮罩层-->
+		<div id="modal">
+		    <!--存储滑块-->
+			<div class="verBox">
+				<div id="imgVer" style="display:inline-block;"></div>
+			</div>
+		</div>
+		<!--存储密码错误两次时的返回值-->
+		<input type="text" name="temp" id="tempPsdwrong" value="" style="border: white; display: none;" />
+		<!-- /container -->
+		<script src="js/TweenLite.min.js"></script>
+		<script src="js/EasePack.min.js"></script>
+		<script src="js/rAF.js"></script>
+		<script src="js/demo-1.js"></script>
+	</body>
+
+	<script type="text/javascript">
+		layui.use(['layer'], function() {
+			var layer = layui.layer;
+			var $ = layui.$;
+			//加载滑块图片
+			imgVer({
+				el: '$("#imgVer")',
+				width: '260',
+				height: '116',
+				img: [
+					'images/ver.png',
+					'images/ver-1.png',
+					'images/ver-2.png',
+					'images/ver-3.png'
+				],
+				success: function() {	//滑块拼成功后执行的方法
+					$("#tempPsdwrong").val("");	//滑块拼图成功后清空记录的错误次数
+					//alert('执行登录函数');
+					$(".login").css({
+						"left": "0",
+						"opacity": "1"
+					});
+					$(".verBox").css({
+						"left": "404px",
+						"opacity": "0"
+					});
+					$("#loginBtn").click();	//重新发动请求
+					cover.style.display="none";   //隐藏遮罩层
+					setTimeout(function(){
+						$("#modal").attr("style", "display: none;");	//隐藏最外层div
+					}, 1000);
+				},
+				error: function() {	//滑块拼图失败后执行的方法
+					//alert('错误什么都不执行')
+				}
+			});
+			
+			//点击登录按钮
+			$("#loginBtn").on("click", function() {
+				var logname = $("#logname").val();	//获取用户名
+				var logpass = $("#logpass").val();	//获取密码
+				if (logname == "" || logname == null) {	//用户名为空
+					layer.msg("用户名不能为空");
+					return false;
+				}
+				if (logpass == "" || logpass == null) {	//密码为空
+					layer.msg("密码不能为空");
+					return false;
+				}
+				if ($("#tempPsdwrong").val() == 2) {	//如果密码次数达到两次   加载滑块
+					$(".login").css({
+						"left": "-404px",
+						"opacity": "0"
+					});
+					$(".verBox").css({
+						"left": "0",
+						"opacity": "1"
+					});
+					cover.style.display="block";   //显示遮罩层
+		        	modal.style.display="block";   //显示滑块
+					return false;	//结束方法
+				}
+				$.get(globalData.server + 'login', {	//异步请求服务器  改为了身份证号登陆
+					"idcard": logname,
+					"password": logpass
+				}, function(res){
+					if(res.code != 0 && res.code != 2) {	//说明登录成功
+						//把登陆的用户名和token存入h5的缓存
+						globalData.setUserInfo(res.uid, res.loginname, res.token, res.idcard, res.protectmtel);
+						//跳转到index.html
+						location.href = "index.html";
+					} else {	//登录失败
+						layer.msg(res.msg);	//密码错误提示
+						$("#tempPsdwrong").val(res.code);	//将错误时返回的状态码设置到输入框
+					}
+				}, "json");
+				return false;
+			});
+		});
+	</script>
+
+</html>

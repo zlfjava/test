@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="Author" contect="http://www.webqin.net">
+		<title>身份验证</title>
+		<link rel="shortcut icon" href="images/favicon.ico" />
+		<link type="text/css" href="../css/css.css" rel="stylesheet" />
+		<script type="text/javascript" src="../js/jquery-1.8.3-min.js"></script>
+		<script src="../js/global.js"></script>
+		<script type="text/javascript">
+			//导航定位
+			$(function() {
+				// $(".nav li:eq(2) a:first").addClass("navCur")
+				//验证手机 邮箱 
+				$(".selyz").change(function() {
+					var selval = $(this).find("option:selected").val();
+					if(selval == "0") {
+						$(".sel-yzsj").show()
+						$(".sel-yzyx").hide()
+					} else if(selval == "1") {
+						$(".sel-yzsj").hide()
+						$(".sel-yzyx").show()
+					}
+				})
+			})
+		</script>
+		<style type="text/css">
+			body {
+				width: 100%;
+				height: 100%;
+				background-image: url(../img/timg.jpg);
+				background-repeat: no-repeat;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="content">
+			<div class="web-width">
+				<div class="for-liucheng">
+					<div class="liulist for-cur"></div>
+					<div class="liulist for-cur"></div>
+					<div class="liulist"></div>
+					<div class="liulist"></div>
+					<div class="liutextbox">
+						<div class="liutext for-cur"><em>1</em><br /><strong>填写账户名</strong></div>
+						<div class="liutext for-cur"><em>2</em><br /><strong>验证身份</strong></div>
+						<div class="liutext"><em>3</em><br /><strong>设置新密码</strong></div>
+						<div class="liutext"><em>4</em><br /><strong>完成</strong></div>
+					</div>
+				</div>
+				<form class="forget-pwd">
+					<dl>
+						<dt>*验证方式：</dt>
+						<dd>
+							<select class="selyz" style="background-color: white;">
+								<option value="0">手机验证</option>
+								<!--
+									<option value="1">邮箱验证</option>
+								-->
+							</select>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<dl class="sel-yzsj">
+						<dt>*绑定手机号：</dt>
+						<dd>
+							<input type="text" placeholder="请输入正确的手机号（必填）" style="background-color: white;" autocomplete="off" id="protectmtel" value="" />
+							<span id="showProtectmtel" class="loginNameRed"></span>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<dl class="sel-yzyx" style="display: none;">
+						<dt>*已验证邮箱：</dt>
+						<dd><input type="text" placeholder="请输入正确的邮箱（必填）" style="background-color: white;" id="protectemail" autocomplete="off" value="" /></dd>
+						<div class="clears"></div>
+					</dl>
+					<dl>
+						<dt>*手机校验码：</dt>
+						<dd>
+							<input type="text" placeholder="收到的验证码（必填）" style="background-color: white;" id="yanzm" autocomplete="off" />
+							<button id="yzm">获取短信验证码</button>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<div class="subtijiao"><input type="button" id="tj" value="提交" /></div>
+				</form>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		layui.use(['layer'], function() {
+			var layer = layui.layer;
+			var $ = layui.$;
+			/**
+			 * 手机号输入框的失去焦点事件
+			 */
+			$("#protectmtel").blur(function() {
+				var protectmtel = $("#protectmtel").val(); //根据id获取输入框的value值
+				//如果手机号输入框为空 给出提示
+				if(protectmtel == "" || protectmtel == null) {
+					$("#showProtectmtel").html("*手机号必填");
+					return false;
+				}
+				if(!(/^1[3456789]\d{9}$/.test(protectmtel))) {
+					$("#showProtectmtel").html("*手机号码格式有误，请重填");
+					return false;
+				}
+				//请求地址
+				var getUrl = globalData.server + '/users/Protectmtel';
+				//post异步请求
+				$.post(getUrl, {
+					//手机号参数
+					"protectmtel": protectmtel
+				}, function(res) {
+					if(res.code > 0) { //判断返回的状态码 如果大于0说明有该手机号
+						$("#showProtectmtel").html(""); //清空提示
+					} else {
+						$("#showProtectmtel").html(res.msg); //没有给出提示
+					}
+				}, "json");
+			});
+
+			var timeClock; //倒计时计时器
+
+			/**
+			 * 发送验证码
+			 */
+			$("#yzm").click(function() {
+				var protectmtel = $("#protectmtel").val();
+				if(protectmtel == "" || protectmtel == null) {
+					$("#showProtectmtel").html("请填写手机号");
+					return false;
+				}
+				if($("#showProtectmtel").html() != "") {
+					return false;
+				}
+				//请求地址
+				var getUrlyzm = globalData.server + '/users/findByYzmpwd';
+				//get异步请求
+				$.get(getUrlyzm, {
+					//请求参数
+					"protectmtel": protectmtel
+				}, function(res) {
+					$("#yzm").attr("disabled", "disabled"); //60秒之内荣按钮不可用
+					$("#yzm").css("cursor", "not-allowed"); //鼠标悬浮显示禁止使用的图标
+					$('#yzm').html(60 + "秒后重试");
+					var timer_num = 60; //60秒
+					timeClock = setInterval(function() {
+						timer_num--; //每次减一秒
+						$('#yzm').html(timer_num + "秒后重试"); //提示秒数
+						if(timer_num == 0) {
+							clearInterval(timeClock); //当零秒后结束方法
+							$('#yzm').html("重新获取"); //更换按钮的值
+							$("#yzm").removeAttr("disabled"); //让按钮重新可用
+							$("#yzm").css("cursor", "pointer"); //鼠标变手
+						}
+					}, 1000); //1秒执行1次
+				}, "json");
+				return false;
+			});
+
+			/**
+			 * 点击提交时，到后台验证验证码
+			 */
+			$("#tj").click(function() {
+				//判断手机号是否输入了 如果没输入  给出提示
+				if($("#protectmtel").val() == "" || $("#protectmtel").val() == null) {
+					$("#showProtectmtel").html("请填写手机号");
+					return false;
+				}
+				if(!(/^1[3456789]\d{9}$/.test(protectmtel))) {
+					$("#showProtectmtel").html("*手机号码格式有误，请重填");
+					return false;
+				}
+				var yanzm = $("#yanzm").val(); //获取验证码
+				if(yanzm == "" || yanzm == null) { //如果验证码没有填写 给出提示
+					layer.msg("必须填写验证码！");
+					return false;
+				}
+				if($("#yzm").html() == "重新获取") { //如果验证码超时  给出重新获取的提示
+					layer.msg("验证码已超时，请重新获取");
+					return false;
+				}
+				//请求地址
+				var getUrl = globalData.server + '/users/findByYanzm';
+				//post异步请求
+				$.post(getUrl, {
+					//验证码参数
+					"yanzm": yanzm
+				}, function(res) {
+					if(res.code > 0) { //返回的状态码  大于0说明验证成功
+						location.href = "forgetPwd3.html"; //跳转页面
+					} else {
+						layer.msg(res.msg); //验证失败的提示
+					}
+				}, "json");
+			});
+
+		});
+	</script>
+
+</html>

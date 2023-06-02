@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../../js/global.js"></script>
+	</head>
+	<body>
+		<div class="x-nav">
+			<span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">学生管理</a>
+		        <a><cite>学生信息</cite></a>
+	        </span>
+			<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:38px">&#xe669;</i>
+			</a>
+		</div>
+		
+		<!-- 添加跟踪记录 -->
+		<div id="followsDiv" style="display: none; margin-top: 20px;">
+			<form class="layui-form" id="followsForm" lay-filter="followsForm">
+				<!--客户id主键  添加回访记录所需参数-->
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">学生：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<select name="sid" class="addSname" required lay-verify="required">
+							<option value="">--请选择--</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">回访时间：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="visittime" id="followsVisittime" placeholder="yyyy-MM-dd HH:mm:ss" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;">回访情况：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="visitcase" placeholder="请输入回访情况" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;">跟踪方式：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="trackingmode" placeholder="请输入跟踪方式" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;">下次跟踪时间：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="nexttrackingtime" id="followsNexttrackingtime" placeholder="yyyy-MM-dd HH:mm:ss" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;">状态：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="stustatus" placeholder="请输入客户状态" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;">备注：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<textarea name="fremark" placeholder="请输入备注" autocomplete="off" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label"  style="width: 100px;"></label>
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="followsBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<!--跟踪记录的修改-->
+		<div id="editFollowsDiv" style="display: none; margin-top: 20px;">
+			<form class="layui-form" id="editFollowsForm" lay-filter="editFollowsForm">
+				<input type="hidden" name="fid" autocomplete="off" class="layui-input">
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">跟踪方式：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="trackingmode" placeholder="请输入跟踪方式" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">回访情况：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<textarea name="visitcase" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">跟踪时间：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="visittime" id="editFollowsVisittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">下次跟踪时间：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="nexttrackingtime" id="editFollowsNexttrackingtime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">状态：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="stustatus" placeholder="请输入状态" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">备注：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="fremark" placeholder="请输入备注" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;"></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="editFollowsBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<!--跟踪记录的详情 -->
+		<div id="detailFollowsDiv" style="display: none; margin-top: 20px;">
+			<form class="layui-form" id="detailFollowsForm" lay-filter="detailFollowsForm">
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">跟踪者：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="szxsid" id="szxsid" placeholder="跟踪者" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">跟踪方式：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="trackingmode" placeholder="请输入跟踪方式" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">跟踪时间：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="visittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">下次跟踪时间：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="nexttrackingtime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">回访情况：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<textarea name="visitcase" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">状态：</label>
+					<div class="layui-input-inline" style="width: 350px;">
+						<input type="text" name="stustatus" placeholder="请输入状态" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 100px;">备注：</label>
+					<div class="layui-input-inline"  style="width: 350px;">
+						<input type="text" name="fremark" placeholder="请输入备注" autocomplete="off" required lay-verify="required" class="layui-input">
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<!--数据表格头部工具栏-->
+		<script type="text/html" id="toolbarDemo">
+		    <div class="layui-btn-container">
+			    <button class="layui-btn layui-btn-sm" lay-event="addFollowsBtns">
+			    	<i class="layui-icon">&#xe61f;</i>新建跟踪
+			    </button>
+		    </div>
+		</script>
+		
+		<!--日志信息行内工具栏-->
+		<script type="text/html" id="barDemoFollows">
+			<a class="layui-btn layui-btn-xs" lay-event="detail"><i class="layui-icon">&#xe60b;</i>查看</a>
+			<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="followsRz"><i class="layui-icon">&#xe60e;</i>日志</a>
+		</script>
+
+		
+		<!-- 条件查询区 -->
+		<div class="layui-form-item" style="margin-left: 10px; margin-top: 20px;">
+			<form class="layui-form" action="">
+				<label class="layui-form-mid">学生姓名：</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<input type="text" id="searchSname" placeholder="关键字" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">跟踪者：</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<input type="text" id="searchUid" placeholder="关键字" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">跟踪方式：</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<input type="text" id="searchTrackingmode" placeholder="关键字" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">跟踪时间：</label>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="searchBeginTime" placeholder="开始时间" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">--</label>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="searchEndTime" placeholder="结束时间" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">回访情况：</label>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="searchVisitcase" placeholder="关键字" autocomplete="off" class="layui-input">
+				</div>
+				<button class="layui-btn" type="button" id="searshFollows">
+			        <i class="layui-icon">&#xe615;</i>检索
+			    </button>
+			    <button class="layui-btn layui-btn-primary" type="reset" id="resetSearch">
+			        <i class="layui-icon">&#x1006;</i>清空
+			    </button>
+			</form>
+		</div>
+		
+		<!--显示学生日志的数据表格-->
+		<table id="demoFollows" lay-filter="demoFollows"></table>
+		
+		<!--显示关于某个学生的日志-->
+		<div id="demoFollowsDiv" style="display: none;">
+			<!-- 条件查询区 -->
+			<div class="layui-form-item" style="margin-left: 10px; margin-top: 20px;">
+				<form class="layui-form" action="">
+					<label class="layui-form-mid">跟踪方式：</label>
+					<div class="layui-input-inline" style="width: 150px;">
+						<input type="text" id="searchTrackingmodeRz" placeholder="关键字" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">跟踪时间：</label>
+					<div class="layui-input-inline" style="width: 200px;">
+						<input type="text" id="searchBeginTimeRz" placeholder="开始时间" autocomplete="off" class="layui-input">
+					</div>	
+					<label class="layui-form-mid">--</label>
+					<div class="layui-input-inline" style="width: 200px;">
+						<input type="text" id="searchEndTimeRz" placeholder="结束时间" autocomplete="off" class="layui-input">
+					</div>
+					<button class="layui-btn" type="button" id="searshFollowsRz">
+				        <i class="layui-icon">&#xe615;</i>检索
+				    </button>
+				    <button class="layui-btn layui-btn-primary" type="reset" id="resetSearchRz">
+				        <i class="layui-icon">&#x1006;</i>清空
+				    </button>
+				</form>
+			</div>
+			<!--显示学生日志的数据表格-->
+			<table id="demoFollowsRz" lay-filter="demoFollowsRz"></table>
+		</div>
+		
+		<!--数据表格头部工具栏-->
+		<script type="text/html" id="toolbarDemoRz">
+		    <div class="layui-btn-container">
+			    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delListBtn">
+			    	<i class="layui-icon">&#xe640;</i>批量删除
+			    </button>
+		    </div>
+		</script>
+		
+		<!--日志信息行内工具栏-->
+		<script type="text/html" id="barDemoFollowsRz">
+			<a class="layui-btn layui-btn-xs" lay-event="editRz"><i class="layui-icon">&#xe642;</i>编辑</a>
+			<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delRz"><i class="layui-icon">&#xe640;</i>删除</a>
+		</script>
+		
+		<!--新建跟踪页面的显示-->
+		<script type="text/html" id="titleTpl">
+		  	{{#  if(d.user == null){ }}
+		    	<a>未跟踪</a>
+		  	{{#  } else { }}
+		    	{{d.user.loginname}}
+		  	{{#  } }}
+		</script>
+		
+		<!--日志页面的显示-->
+		<script type="text/html" id="titleTplRz">
+		  	{{#  if(d.user == null){ }}
+		    	<a>未跟踪</a>
+		  	{{#  } else { }}
+		    	{{d.user.loginname}}
+		  	{{#  } }}
+		</script>
+		
+		<script>
+			layui.use(['table', 'form', 'layer', 'laydate', 'element', 'upload', 'rate'], function() {
+				var table = layui.table;
+				var form = layui.form;
+				var layer = layui.layer;
+				var laydate = layui.laydate;
+				var upload = layui.upload;
+				var rate = layui.rate;
+				var $ = layui.$;
+				
+				var uphone =  globalData.getProtectmtel();	//存储手机号参数
+				
+				for (var i = 0; i < tempQuanXian.length; i++) {
+					if (tempQuanXian[i] == "wlgz:getAllStuFollows") {	//判断有没有查看所有学生信息的权限
+						uphone = "";	//如果有 取消手机号参数
+					}
+				}
+				
+				//新建跟踪信息时 显示学生的下拉框
+				$.post(globalData.server + "/students/getAllStuName", {
+					"uphone": uphone,
+					"token": globalData.getToken()
+				}, function(res) { //遍历返回的数据
+					$.each(res, function(index, item) {
+						$(".addSname").append(new Option(item.sname, item.sid));
+					});
+					layui.form.render();	//重新渲染表单元素
+				}, "json");
+				
+				
+				//渲染数据表格
+				table.render({
+					elem: '#demoFollows',
+					url: globalData.server + "/follows/getAllFollowsWlgz",
+					method: 'post',
+					page: true,
+					limit: '10',
+					toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+					where: {
+						'fid': '是',	//只查询有效学生  没有被软删除的
+						'nexttrackingtime': uphone,	//手机号参数，根据手机号查询属于该咨询师的学生
+						'token': globalData.getToken()
+					}, //验证
+					cols: [[
+						{type: 'checkbox'},
+						{type: 'numbers', title: '序号', align: 'center'},
+						{field: 'student', title: '学生姓名', width: 100, align: 'center',
+							templet: "<span>{{d.student.sname}}</span>"
+						},
+						{field: 'user', title: '跟踪者', width: 100, align: 'center',
+							templet:"#titleTpl"
+						},
+						{field: 'visitcase', title: '回访情况', width: 200, align: 'center'},
+						{field: 'trackingmode', title: '跟踪方式', width: 100, align: 'center'},
+						{field: 'visittime', title: '跟踪时间', width: 180, align: 'center'},
+						{field: 'nexttrackingtime', title: '下次跟踪时间', width: 180, align: 'center'},
+						{field: 'stustatus', title: '状态', width: 160, align: 'center'},
+						{field: 'fremark', title: '备注', width: 150, align: 'center'},
+						{title: '操作', align: 'center', width: 230, toolbar: '#barDemoFollows'}
+					]],
+					id: "followsReloadId"
+				});
+				
+				//头工具栏事件
+			    table.on('toolbar(demoFollows)', function(obj){
+				    switch(obj.event){
+				        case 'addFollowsBtns':	//点击新建跟踪信息按钮触发
+				        	layer.open({
+								type: 1,
+								title: "新建跟踪信息",
+								anim: 1,
+								maxmin: true,
+								offset: '80px',
+								area: ['600px', '600px'],
+								content: $('#followsDiv'),
+								cancel: function(index, layero){ 	//弹窗关闭时的回调函数
+								    layer.msg("已关闭", {icon : 6});	//提示已关闭
+								    layer.close(index);	//关闭弹出层
+								    $("#followsForm")[0].reset();
+								  	return false; 
+								}
+							});
+							break;
+				      	case 'LAYTABLE_TIPS':	//自定义头工具栏右侧图标 - 提示
+				        	layer.alert('这是工具栏右侧自定义的一个图标按钮');
+				      		break;
+				    };
+			    });
+			    
+			    //监听提交   跟踪
+				form.on('submit(followsBtn)', function(data) {
+					var followsUrl = globalData.server + "/follows/add"; //请求地址
+					var strData = $("#followsForm").serialize() + "&token=" + globalData.getToken() + 
+							"&uid=" + globalData.getUid();
+					//发异步，把数据提交给java
+					$.post(followsUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {icon: 1});
+							$("#followsForm")[0].reset();
+							activeFollows.reload();
+						} else {
+							layer.msg(res.msg, {icon: 5});
+						}
+					}, "json");
+					return false;
+				});
+				
+				//监听工具条 
+				table.on('tool(demoFollows)', function(obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+					if(layEvent === 'followsRz'){ //日志
+						$("#resetSearchRz").click();	
+						//判断当前学生有没有跟踪过，如果跟踪过  传入学生id 如果没有  随便设置一个（这样就查不出来数据了）
+						var tempSid = data.student.sid == null ? 666 : data.student.sid;
+						table.reload("followsRzReloadId", {	//重载数据表格
+							where: {"sid": tempSid, "token": globalData.getToken()},
+							page: {curr: 1}
+						});
+						layer.open({
+							type: 1,
+							title: "您正在查看[" + data.student.sname + "]客户的沟通日志",
+							anim: 1,
+							maxmin: true,
+							offset: '1px',
+							area: ['1500px', '730px'],
+							content: $('#demoFollowsDiv'),
+							cancel: function(index, layero){ 	//弹窗关闭时的回调函数
+							    layer.msg("已关闭", {icon : 6});	//提示已关闭
+							    layer.close(index);	//关闭弹出层
+							  	return false; 
+							}
+						});
+					} else if(layEvent === 'detail'){ //查看
+						form.val("detailFollowsForm", data); //数据回显
+						if (data.user == null) {
+							$("#szxsid").val("未跟踪");
+						} else {
+							$("#szxsid").val(data.user.loginname);
+						}
+						layer.open({
+							type: 1,
+							title: "您正在查看[" + data.student.sname + "]客户的信息",
+							anim: 1,
+							maxmin: true,
+							offset: '80px',
+							area: ['700px', '550px'],
+							content: $('#detailFollowsDiv')
+						});
+					}
+				});
+				
+				//点击信息检索按钮时触发
+				$("#searshFollows").on("click", function() {
+					activeFollows.reload();
+					return false;
+				});
+				
+				/**
+				 * 重载数据表格的方法
+				 * 参数 searchSname searchUid visitcase sqq sgender paythefees isvisit
+				 */
+				activeFollows = {
+					reload: function() {
+						table.reload("followsReloadId", {
+							where: {
+								"stustatus": $("#searchSname").val(),
+								"uid": $("#searchUid").val(),
+								"trackingmode": $("#searchTrackingmode").val(),
+								"visittime": $("#searchBeginTime").val(),
+								"fremark": $("#searchEndTime").val(),
+								"visitcase": $("#searchVisitcase").val(),
+								"token": globalData.getToken()
+							},
+							page: {
+								curr: 1
+							}
+						});
+					}
+				}
+				
+				//渲染数据表格
+				table.render({
+					elem: '#demoFollowsRz',
+					url: globalData.server + "/follows/getAllFollowsWlgz",
+					method: 'post',
+					page: true,
+					limit: '10',
+					toolbar: '#toolbarDemoRz', //开启头部工具栏，并为其绑定左侧模板
+					where: {
+						'token': globalData.getToken()
+					}, //验证
+					cols: [[
+						{type: 'checkbox'},
+						{type: 'numbers', title: '序号', align: 'center'},
+						{field: 'student', title: '跟踪者', width: 100, align: 'center',
+							templet:"#titleTplRz	"
+						},
+						{field: 'visitcase', title: '回访情况', width: 200, align: 'center'},
+						{field: 'trackingmode', title: '跟踪方式', width: 100, align: 'center'},
+						{field: 'visittime', title: '跟踪时间', width: 180, align: 'center'},
+						{field: 'nexttrackingtime', title: '下次跟踪时间', width: 180, align: 'center'},
+						{field: 'stustatus', title: '状态', width: 160, align: 'center'},
+						{field: 'fremark', title: '备注', width: 150, align: 'center'},
+						{title: '操作', align: 'center', width: 230, toolbar: '#barDemoFollowsRz'}
+					]],
+					id: "followsRzReloadId"
+				});
+				
+			    //头工具栏事件
+			    table.on('toolbar(demoFollowsRz)', function(obj){
+				    switch(obj.event){
+				        case 'delListBtn':	//批量删除
+				        	var check = table.checkStatus("followsRzReloadId");	//获取数据表格
+							var data = check.data;	//获取数据表格里面的数据
+							var ids = [];	//创建数据，存储uid
+							//遍历选中的数据
+							for (var i = 0; i < data.length; i++) {
+								ids.push(data[i].fid);	//取出uid并添加到数组中
+							}
+							var idJoin = ids.join(",");  //使用逗号分隔uid
+							if (ids == null || ids == "") {	//判断是否勾选了数据
+								layer.msg("请先选择要删除的数据", {icon : 5});	//没选择给出提示
+								return false;	//结束方法
+							}
+							layer.confirm("确认删除这["+ ids.length +"]条数据吗？", function(){
+								var delUrl = globalData.server + "/follows/del";	//请求地址
+								//请求参数
+								var strData = {
+									"fid": idJoin,
+									"token": globalData.getToken()
+								}
+								//post请求
+								$.post(delUrl, strData, function(res){
+									if (res > 0) {
+										layer.msg("删除成功!", {icon : 1});
+										active.reload();
+									} else{
+										layer.msg("删除失败!", {icon : 5});
+									}					
+								}, "json");
+							});
+							return false;
+							break;
+				      	case 'LAYTABLE_TIPS':	//自定义头工具栏右侧图标 - 提示
+				        	layer.alert('这是工具栏右侧自定义的一个图标按钮');
+				      		break;
+				    };
+			    });
+				
+				var editFollowsOpen;	//点击编辑跟踪记录的layer.open弹窗
+				
+				//监听工具条 
+				table.on('tool(demoFollowsRz)', function(obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+					if(layEvent === 'editRz'){ //编辑
+						form.val("editFollowsForm", data); //数据回显
+						editFollowsOpen = layer.open({
+							type: 1,
+							title: "您正在编辑[" + data.student.sname + "]客户的信息",
+							anim: 1,
+							maxmin: true,
+							offset: '80px',
+							area: ['700px', '550px'],
+							content: $('#editFollowsDiv')
+						});
+					} else if(layEvent === 'delRz'){ //删除
+						layer.confirm("确认删除这条数据吗？", function(){
+							var delUrl = globalData.server + "/follows/del";	//请求地址
+							//请求参数
+							var strData = {
+								"fid": data.fid,
+								"token": globalData.getToken()
+							}
+							//post请求
+							$.post(delUrl, strData, function(res){
+								if (res > 0) {
+									layer.msg("删除成功!", {icon : 1});
+									active.reload();
+								} else{
+									layer.msg("删除失败!", {icon : 5});
+								}					
+							}, "json");
+						});
+					}
+				});
+				
+				//监听提交   修改跟踪日志
+				form.on('submit(editFollowsBtn)', function(data) {
+					var followsUrl = globalData.server + "/follows/edit"; //请求地址
+					var strData = $("#editFollowsForm").serialize() + "&token=" + globalData.getToken();
+					//发异步，把数据提交给java
+					$.post(followsUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.close(editFollowsOpen);
+							layer.msg(res.msg, {icon: 1});
+							active.reload();
+						} else {
+							layer.msg(res.msg, {icon: 5});
+						}
+					}, "json");
+					return false;
+				});
+				
+				//点击日志信息检索按钮时触发
+				$("#searshFollowsRz").on("click", function() {
+					active.reload();
+					return false;
+				});
+				
+				/**
+				 * 重载日志数据表格的方法
+				 * 参数 searchTrackingmodeRz searchBeginTimeRz searchEndTimeRz
+				 */
+				active = {
+					reload: function() {
+						table.reload("followsRzReloadId", {
+							where: {
+								"trackingmode": $("#searchTrackingmodeRz").val(),
+								"visittime": $("#searchBeginTimeRz").val(),
+								"fremark": $("#searchEndTimeRz").val(),
+								"token": globalData.getToken()
+							},
+							page: {
+								curr: 1
+							}
+						});
+					}
+				}
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#followsVisittime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#followsNexttrackingtime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#searchBeginTime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#searchEndTime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#editFollowsVisittime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#editFollowsNexttrackingtime', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#searchBeginTimeRz', //指定元素
+					type: 'datetime'
+				});
+				
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#searchEndTimeRz', //指定元素
+					type: 'datetime'
+				});
+				
+				
+			//layui.use的括号
+			});
+			
+		</script>
+	</body>
+
+</html>

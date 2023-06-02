@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="Author" contect="http://www.webqin.net">
+		<title>用户名验证</title>
+		<link rel="shortcut icon" href="images/favicon.ico" />
+		<link type="text/css" href="../css/css.css" rel="stylesheet" />
+		<script src="../js/global.js"></script>
+		<style type="text/css">
+			body {
+				width: 100%;
+				height: 100%;
+				background-image: url(../img/timg.jpg);
+				background-repeat: no-repeat;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="content">
+			<div class="web-width">
+				<div class="for-liucheng">
+					<div class="liulist for-cur"></div>
+					<div class="liulist"></div>
+					<div class="liulist"></div>
+					<div class="liulist"></div>
+					<div class="liutextbox">
+						<div class="liutext for-cur"><em>1</em><br /><strong>填写账户名</strong></div>
+						<div class="liutext"><em>2</em><br /><strong>验证身份</strong></div>
+						<div class="liutext"><em>3</em><br /><strong>设置新密码</strong></div>
+						<div class="liutext"><em>4</em><br /><strong>完成</strong></div>
+					</div>
+				</div>
+				<form class="forget-pwd layui-form" id="editForm">
+					<dl>
+						<dt>*身份证号：</dt>
+						<dd>
+							<input type="text" placeholder="请输入正确的身份证号（必填）" style="background-color: white;" id="loginname" name="loginname" autocomplete="off"/>
+							<span id="shuoMsg" class="loginNameRed"></span>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<div class="subtijiao"><input type="button" lay-submit id="editBtn" class="layui-btn" lay-filter="editBtn" value="提交" /></div>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		layui.use(['layer'], function() {
+			var layer = layui.layer;
+			var $ = layui.$;
+			
+			//点击提交按钮触发
+			$("#editBtn").on("click", function() {
+				var loginname = $("#loginname").val();	//获取用户名输入框的value值
+				//判断输入框是否为空
+				if (loginname == "" || loginname == null) {
+					$("#shuoMsg").html("*身份证号必填");	//如果为空给出提示
+					return false;	//结束方法
+				}
+				//请求地址
+				var getUrl = globalData.server + '/users/findByLoginname';
+				//post异步请求
+				$.post(getUrl, {
+					//请求参数
+					"idcard": loginname
+				}, function(res) {
+					if(res.code > 0) {	//如果状态码大于0，说明用户名正确
+						//跳转到forgetPwd2.html
+						location.href = "forgetPwd2.html";
+					} else {
+						$("#shuoMsg").html(res.msg);	//如果不正确 给出提示
+					}
+				}, "json");
+			});
+		});
+	</script>
+
+</html>

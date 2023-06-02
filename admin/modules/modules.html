@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>tree-table</title>
+		<link rel="stylesheet" href="../../css/common.css" />
+		<script src="../../js/global.js"></script>
+	</head>
+
+	<body>
+		<div class="x-nav">
+	        <span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">系统管理</a>
+		        <a><cite>模块管理</cite></a>
+	        </span>
+	        <a class="layui-btn layui-btn-small" id="shuaXinyemian" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+	          <i class="layui-icon" style="line-height:38px">&#xe669;</i>
+	        </a>
+	    </div>
+		<div class="layui-container layui-text">
+			</h1>
+			<!--按钮区-->
+			<br>
+			<div class="layui-btn-group">
+				<button class="layui-btn" id="btn-expand"><i class="layui-icon">&#xe61a;</i>全部展开</button>
+				<button class="layui-btn" id="btn-fold"><i class="layui-icon">&#xe619;</i>全部折叠</button>
+				<button class="layui-btn" id="btn-refresh"><i class="layui-icon">&#xe669;</i>刷新表格</button>
+				<button class="layui-btn check_add" type="button" id="addFuJieDian">
+			        <i class="layui-icon">&#xe61f;</i>新增父节点
+			    </button>
+			    <button class="layui-btn check_deletelist" type="button" id="addJieDian">
+			        <i class="layui-icon">&#xe61f;</i>新增子节点
+			    </button>
+			</div>
+			<table id="table1" class="layui-table" lay-filter="table1"></table>
+		</div>
+
+		<!--操作展示区-->
+		<div class="layui-input-inline showAdd" id="showAdd" style="display: none;">
+			<!--添加子节点区-->
+			<form class="layui-form" id="addForm">
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>所属父节点
+	  	            </label>
+					<div class="layui-input-inline">
+						<select name="parentid" id="parentid" class="fmk">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>子节点名称
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" name="title" id="addzjd" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入子节点名称" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>模块路径
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" name="mpath" id="addpath" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块路径" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>模块权重
+	  	           </label>
+					<div class="layui-input-inline">
+						<input type="number" name="mweight" id="addqz" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块权重（只能为数字）" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label"> </label>
+					<button class="layui-btn" type="button" lay-submit id="addBtn" lay-filter="addBtn">
+				        <i class="layui-icon">&#xe605;</i>提交
+				    </button>
+				</div>
+			</form>
+		</div>
+
+		<!--操作展示区-->
+		<div class="layui-input-inline showAdd" id="showAddFu" style="display: none;">
+			<!--添加父节点-->
+			<div class="x-body layui-anim layui-anim-up" id="addFDiv" style="display: none; margin-top: 50px; width: 300px;">
+				<form class="layui-form" id="addFForm">
+					<div class="layui-form-item">
+						<label for="L_email" class="layui-form-label">
+		  	            	<span class="x-red">*</span>父节点名称
+		  	            </label>
+						<div class="layui-input-inline">
+							<input type="text" style="width: 300px;" name="title" required lay-verify="required" autocomplete="off" placeholder="请输入父节点名称" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>权重
+		  	           </label>
+						<div class="layui-input-inline">
+							<input type="number" name="mweight" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块权重（只能为数字）" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>图标
+		  	            </label>
+						<div class="layui-input-inline">
+							<input type="text" name="styleicon" id="tempIcon" style="display: none;" value="" />
+				            <input type="text" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_repass" class="layui-form-label"> </label>
+						<button class="layui-btn" type="button" lay-submit id="addBtnfjd" lay-filter="addBtnfjd">
+					        <i class="layui-icon">&#xe605;</i>提交
+					    </button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!--编辑父节点-->
+		<div class="x-body layui-anim layui-anim-up" id="editFDiv" style="display: none; margin-top: 50px;">
+			<form class="layui-form" id="editFForm" lay-filter="editFForm">
+				<input type="text" name="id" class="layui-input" style="display: none;">
+				<div class="layui-form-item">
+					<label for="L_email" class="layui-form-label">
+	  	            	<span class="x-red">*</span>父节点名称
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" style="width: 300px;" name="title" required lay-verify="required" autocomplete="off" placeholder="请输入父节点名称" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>权重
+	  	           </label>
+					<div class="layui-input-inline">
+						<input type="number" name="mweight" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块权重（只能为数字）" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>图标
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" name="styleicon" id="editTempIcon" style="display: none;" value="" />
+						<input type="text" id="editiconPicker" lay-filter="editiconPicker" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label"> </label>
+					<button class="layui-btn" type="button" lay-submit id="editBtnfid" lay-filter="editBtnfid">
+				        <i class="layui-icon">&#xe605;</i>提交
+				    </button>
+				</div>
+			</form>
+		</div>
+
+		<!--编辑子节点区-->
+		<div class="layui-input-inline showAdd" id="showedit" style="display: none;">
+			<form class="layui-form" id="editzForm" lay-filter="editzForm">
+				<input type="text" name="id" class="layui-input" style="display: none;">
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>所属父节点
+	  	            </label>
+					<div class="layui-input-inline">
+						<select name="parentid" id="parentid" class="fmk">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>子节点名称
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" name="title" id="addzjd" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入子节点名称" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>模块路径
+	  	            </label>
+					<div class="layui-input-inline">
+						<input type="text" name="mpath" id="addpath" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块路径" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_username" class="layui-form-label">
+	  	            	<span class="x-red">*</span>模块权重
+	  	           </label>
+					<div class="layui-input-inline">
+						<input type="number" name="mweight" id="addqz" required lay-verify="required" style="width: 300px;" autocomplete="off" placeholder="请输入模块权重（只能为数字）" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label"> </label>
+					<button class="layui-btn" type="button" lay-submit id="editBtn" lay-filter="editBtn">
+				        <i class="layui-icon">&#xe605;</i>提交
+				    </button>
+				</div>
+			</form>
+		</div>
+
+		<!-- 行内工具栏 -->
+		<div id="oper-col" class="check_div_toolbar">
+			<button type="button" class="layui-btn layui-btn-xs layui-btn-radius check_edit" lay-event="edit">编辑</button>
+			<button type="button" class="layui-btn layui-btn-danger layui-btn-radius layui-btn-xs check_delete" lay-event="del">删除</button>
+		</div>
+		
+		<script type="text/html" id="titleTpl">
+		    {{#  if(d.styleicon != null){ }}
+		        <span><i class='layui-icon {{d.styleicon}}'></i></span>
+		    {{#  } else { }}
+		        <span></span>
+		    {{#  } }}
+		</script>
+
+		<script>
+			layui.config({
+				base: 'module/'
+			}).extend({
+				treetable: 'treetable-lay/treetable'
+			}).use(['layer', 'form', 'table', 'treetable', 'laydate', 'element', 'iconPicker'], function() {
+				var table = layui.table;
+				var form = layui.form;
+				var layer = layui.layer;
+				var laydate = layui.laydate;
+				var element = layui.element;
+				var treetable = layui.treetable;
+				var iconPicker = layui.iconPicker;
+				var $ = layui.$;
+				
+				//所有父模块的下拉框
+				$.post(globalData.server + "/modules/getAllF", {
+					"token": globalData.getToken()
+				}, function(res) {
+					$.each(res, function(index, item) {
+						$(".fmk").append(new Option(item.title, item.id));
+					});
+					layui.form.render();
+				}, "json");
+				
+				//添加父节点的图标
+				iconPicker.render({
+	                // 选择器，推荐使用input
+	                elem: '#iconPicker',
+	                // 数据类型：fontClass/unicode，推荐使用fontClass
+	                type: 'fontClass',
+	                // 点击回调
+	                click: function (data) {
+	                    $("#tempIcon").val(data.icon);
+	                }
+	            });
+	            
+	            //修改父节点的图标
+	            iconPicker.render({
+	                // 选择器，推荐使用input
+	                elem: '#editiconPicker',
+	                // 数据类型：fontClass/unicode，推荐使用fontClass
+	                type: 'fontClass',
+	                // 点击回调
+	                click: function (data) {
+	                    $("#editTempIcon").val(data.icon);
+	                }
+	            });
+	            
+				// 渲染表格
+				var renderTable = function() {
+					layer.load(2);
+					treetable.render({
+						treeColIndex: 1,
+						treeSpid: 0,
+						treeIdName: 'id',
+						treePidName: 'parentid',
+						treeDefaultClose: true,
+						treeLinkage: true,
+						elem: '#table1',
+						url: globalData.server + '/modules/getAllAll?&token=' + globalData.getToken(),
+						toolbar: 'default',
+						height: 630,
+						page: true,
+						cols: [
+							[{
+									type: 'numbers',
+									title: '序号'
+								},
+								{
+									field: 'title',
+									title: '模块名称'
+								},
+								{
+									field: 'mweight',
+									title: '权重'
+								},
+								{
+									field: 'styleicon',
+									title: '图标样式',
+									templet: '#titleTpl'
+								},
+								{
+									field: 'mpath',
+									title: '模块路径'
+								},
+								{
+									templet: '#oper-col',
+									width: 120,
+									align: 'center',
+									title: '操作'
+								}
+							]
+						],
+						done: function() {
+							layer.closeAll('loading');
+						}
+					});
+				};
+
+				//刷新
+				renderTable();
+				
+				//全部展开
+				$('#btn-expand').click(function() {
+					treetable.expandAll('#table1');
+				});
+				//全部折叠
+				$('#btn-fold').click(function() {
+					treetable.foldAll('#table1');
+				});
+				//刷新
+				$('#btn-refresh').click(function() {
+					renderTable();
+				});
+				
+				//监听工具条
+				table.on('tool(table1)', function(obj) {
+					var data = obj.data;
+					var layEvent = obj.event;
+					if(layEvent === 'del') {
+						layer.confirm("你确定要删除[" + data.title + "]吗？", function(index) {
+							var delUrl = globalData.server + "/modules/del"; //请求地址
+							var delData = {
+								"id": data.id,
+								"token": globalData.getToken()
+							}
+							$.post(delUrl, delData, function(res) {
+								if(res.code > 0) {
+									layer.msg(res.msg, {icon : 1});
+									renderTable();
+								} else {
+									layer.msg(res.msg, {icon : 2});
+								}
+							}, "json");
+						});
+					} else if(layEvent === 'edit') {
+						if(data.parentid == 0) {
+							//修改父节点添加框	
+							form.val("editFForm", data); //数据回显
+							layer.open({
+								type: 1,
+								title: "修改父节点["+ data.title +"]",
+								offset: '80px',
+								anim: 1,
+								area: ['500px', '600px'],
+								content: $('#editFDiv')
+							});
+						} else {
+							//修改子节点添加框	
+							form.val("editzForm", data); //数据回显
+							layer.open({
+								type: 1,
+								title: "修改子节点["+ data.title +"]",
+								offset: '80px',
+								anim: 1,
+								area: ['700px', '600px'],
+								content: $('#showedit')
+							});
+						}
+					}
+				});
+
+				//点击添加子节点按钮
+				$("#addJieDian").on("click", function() {
+					//弹出添加框				
+					layer.open({
+						type: 1,
+						title: "添加子节点",
+						offset: '80px',
+						anim: 1,
+						area: ['700px', '600px'],
+						content: $('#showAdd'),
+						cancel: function(index, layero){ 	//弹窗关闭时的回调函数
+						    layer.close(index);	//关闭弹出层
+						    $("#addForm")[0].reset();
+						  	return false; 
+						}
+					});
+				});
+
+				//监听提交   新增子节点
+				form.on('submit(addBtn)', function(data) {
+					var addUrl = globalData.server + "/modules/add"; //请求地址
+					var strData = $("#addForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+					//发异步，把数据提交给java
+					console.log($("#parentid").val());
+					$.post(addUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {icon : 1});
+							$("#addForm")[0].reset();
+							renderTable();
+							/*setTimeout(function() {	//1秒后重载页面
+								window.location.href="javascript:location.replace(location.href);";
+							}, 1000);*/
+							//所有父模块的下拉框
+						} else {
+							layer.msg(res.msg, {icon : 2});
+						}
+					}, "json");
+					return false;
+				});
+
+				//点击添加父节点按钮
+				$("#addFuJieDian").on("click", function() {
+					$("#addFDiv").attr("style", "display: block;");
+					//弹出添加框				
+					layer.open({
+						type: 1,
+						title: "新增父节点",
+						offset: '80px',
+						anim: 1,
+						area: ['700px', '600px'],
+						content: $('#showAddFu'),
+						cancel: function(index, layero){ 	//弹窗关闭时的回调函数
+						    layer.close(index);	//关闭弹出层
+						    $("#addFForm")[0].reset();
+						  	return false; 
+						}
+					});
+				});
+
+				//监听提交   新增父节点
+				form.on('submit(addBtnfjd)', function(data) {
+					var addUrl = globalData.server + "/modules/addfjd"; //请求地址
+					var strData = $("#addFForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+					//发异步，把数据提交给java
+					$.post(addUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {icon : 1});
+							$("#addFForm")[0].reset();
+							$(".fmk").html("<option value=''></option>");
+							$.post(globalData.server + "/modules/getAllF", {
+								"token": globalData.getToken()
+							}, function(res) {
+								$.each(res, function(index, item) {
+									$(".fmk").append(new Option(item.title, item.id));
+								});
+								layui.form.render();
+							}, "json");
+							renderTable();
+						} else {
+							layer.msg(res.msg, {icon : 2});
+						}
+					}, "json");
+					return false;
+				});
+
+				//监听提交   修改父节点
+				form.on('submit(editBtnfid)', function(data) {
+					var editUrl = globalData.server + "/modules/edit"; //请求地址
+					var editData = $("#editFForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+					//发异步，把数据提交给java
+					$.post(editUrl, editData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {icon : 1});
+							renderTable();
+						} else {
+							layer.msg(res.msg, {icon : 2});
+						}
+					}, "json");
+					return false;
+				});
+				
+				//监听提交   修改子节点
+				form.on('submit(editBtn)', function(data) {
+					var addUrl = globalData.server + "/modules/edit"; //请求地址
+					var strData = $("#editzForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+					//发异步，把数据提交给java
+					$.post(addUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {icon : 1});
+							renderTable();
+						} else {
+							layer.msg(res.msg, {icon : 2});
+						}
+					}, "json");
+					return false;
+				});
+				
+				//判断权限值  根据权限值显示操作按钮
+				for (var i = 0; i < tempQuanXian.length; i++) {
+					if (tempQuanXian[i] == "modules:addSon") {
+						$(".check_deletelist").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "modules:addParent") {
+						$(".check_add").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "modules:edit") {
+						$(".check_edit").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "modules:del") {
+						$(".check_delete").attr("style", "display: inline;");
+					}
+				}
+			
+			//layui.use的括号
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../../js/global.js"></script>
+	</head>
+
+	<body>
+		<div class="x-nav">
+			<span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">学生管理</a>
+		        <a><cite>新生报到</cite></a>
+	        </span>
+			<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:38px">&#xe669;</i>
+			</a>
+		</div>
+		<!-- 条件查询区 -->
+		<div class="layui-form-inline">
+			<form class="layui-form" action="">
+				<div class="layui-form-item">
+					<label class="layui-form-mid">学生姓名：</label>
+					<div class="layui-input-inline" style="width: 100px;">
+						<input type="text" id="sname" placeholder="姓名关键字" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">学生年龄：</label>
+					<div class="layui-input-inline" style="width: 90px;">
+						<input type="number" id="sage" placeholder="最小年龄" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">—</label>
+					<div class="layui-input-inline" style="width: 90px;">
+						<input type="number" id="bigSage" placeholder="最大年龄" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">学生性别：</label>
+					<div class="layui-input-inline" style="width: 100px;">
+						<select id="sgender">
+							<option value="">--请选择--</option>
+							<option value="男">男</option>
+							<option value="女">女</option>
+						</select>
+					</div>
+					<label class="layui-form-mid">手机号：</label>
+					<div class="layui-input-inline" style="width: 150px;">
+						<input type="number" id="sphone" placeholder="学生手机号" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">QQ号：</label>
+					<div class="layui-input-inline" style="width: 150px;">
+						<input type="number" id="sqq" placeholder="学生QQ号" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid">所属咨询师：</label>
+					<div class="layui-input-inline" style="width: 150px;">
+						<select name="szxsid" id="szxsid" class="fmk">
+							<option value="">--请选择--</option>
+						</select>
+					</div>
+					<div class="layui-input-inline" style="width: 100px;">
+						<button class="layui-btn" type="button" id="searsh">
+					        <i class="layui-icon">&#xe615;</i>检索
+					    </button>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-collapse layui-colla-item" lay-accordion>
+						<div class="layui-colla-item">
+							<h2 class="layui-colla-title">更多检索条件</h2>
+							<div class="layui-colla-content" style="height: 27px;">
+								<label class="layui-form-mid">创建时间：</label>
+								<div class="layui-input-inline" style="width: 150px;">
+									<input type="text" id="screatetime" placeholder="开始时间" autocomplete="off" class="layui-input">
+								</div>
+								<div class="layui-form-mid">-</div>
+								<div class="layui-input-inline" style="width: 150px;">
+									<input type="text" id="sid" placeholder="结束时间" autocomplete="off" class="layui-input">
+								</div>
+								<label class="layui-form-mid">是否缴费：</label>
+								<div class="layui-input-inline" style="width: 100px;">
+									<select id="paythefees">
+										<option value="">--请选择--</option>
+										<option value="是">是</option>
+										<option value="否">否</option>
+									</select>
+								</div>
+								<label class="layui-form-mid">是否回访：</label>
+								<div class="layui-input-inline" style="width: 100px;">
+									<select id="isvisit">
+										<option value="">--请选择--</option>
+										<option value="是">是</option>
+										<option value="否">否</option>
+									</select>
+								</div>
+								<label class="layui-form-mid">是否有效：</label>
+								<div class="layui-input-inline" style="width: 100px;">
+									<select id="iseffect">
+										<option value="">--请选择--</option>
+										<option value="是">是</option>
+										<option value="否">否</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- 新增 -->
+		<div id="addDiv" style="display: none; margin-top: 20px;">
+			<form class="layui-form" id="addForm">
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">客户姓名：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sname" required lay-verify="required" placeholder="请输入客户姓名" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid" style="margin-left: 20px;">客户年龄：</label>
+					<div class="layui-input-inline">
+						<input type="number" name="sage" required lay-verify="required" placeholder="请输入客户年龄" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 33px;">
+					<label class="layui-form-mid">手机号：</label>
+					<div class="layui-input-inline">
+						<input type="number" name="sphone" lay-verify="required|phone" required lay-verify="required" placeholder="请输入客户手机号" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid" style="margin-left: 20px;">来源渠道：</label>
+					<div class="layui-input-inline">
+						<select name="sourcechannel">
+							<option value="">--请选择--</option>
+							<option value="线下招生">线下招生</option>
+							<option value="百度">百度</option>
+							<option value="百度手机版">百度手机版</option>
+							<option value="360搜索">360搜索</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 48px;">
+					<label class="layui-form-mid">性别：</label>
+					<div class="layui-input-inline">
+						<input type="radio" name="sgender" value="男" title="男" checked="">
+						<input type="radio" name="sgender" value="女" title="女">
+					</div>
+					<label class="layui-form-mid" style="margin-left: 5px;">来源关键词：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sourceword" placeholder="请输入来源关键词" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">客户学历：</label>
+					<div class="layui-input-inline">
+						<select name="seducation" required lay-verify="required">
+							<option value="">--请选择--</option>
+							<option value="未知">未知</option>
+							<option value="小学">小学</option>
+							<option value="初中">初中</option>
+							<option value="高中">高中</option>
+							<option value="大专">大专</option>
+							<option value="本科">本科</option>
+							<option value="硕士">硕士</option>
+							<option value="博士">博士</option>
+							<option value="其他">其他</option>
+						</select>
+					</div>
+					<label class="layui-form-mid" style="margin-left: 39px;">QQ号：</label>
+					<div class="layui-input-inline">
+						<input type="number" name="sqq" required lay-verify="required" placeholder="请输入客户QQ号" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">客户状态：</label>
+					<div class="layui-input-inline">
+						<select name="sstatus" required lay-verify="required">
+							<option value="">--请选择--</option>
+							<option value="未知">未知</option>
+							<option value="待业">待业</option>
+							<option value="在职">在职</option>
+							<option value="在读">在读</option>
+							<option value="就业">就业</option>
+						</select>
+					</div>
+					<label class="layui-form-mid" style="margin-left: 33px;">微信号：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="wechatid" placeholder="请输入客户微信号" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">来源网址：</label>
+					<div class="layui-input-inline">
+						<select name="sourceurl">
+							<option value="">--请选择--</option>
+							<option value="未知">未知</option>
+							<option value="职英A站">职英A站</option>
+							<option value="职英B站">职英B站</option>
+							<option value="群英编程官网">群英编程官网</option>
+						</select>
+					</div>
+					<label class="layui-form-mid" style="margin-left: 33px;">是否自动分量：</label>
+					<div class="layui-input-inline">
+						<input type="checkbox" name="ifweight" id="addIfweight" lay-skin="switch" lay-text="是|否">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 48px;">
+					<label class="layui-form-mid">备注：</label>
+					<div class="layui-input-inline" style="width: 490px;">
+						<textarea name="sremark" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 90px;">
+					<label class="layui-form-mid"></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="addBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- 查看 -->
+		<div id="detailDiv" style="display: none; margin-top: 10px;">
+			<form class="layui-form" id="detailForm" lay-filter="detailForm">
+				<div class="layui-input-inline" style="margin-bottom: 212px;">
+					<div class="layui-form-item" style="margin-left: 6px;">
+						<label class="layui-form-mid">网络咨询师：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="loginname" id="sxname" disabled="disabled" placeholder="所属网络咨询师" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户姓名：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sname" placeholder="客户姓名" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">客户年龄：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sage" placeholder="客户年龄" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 33px;">
+						<label class="layui-form-mid">手机号：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sphone" placeholder="客户手机号" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">来源渠道：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sourcechannel" placeholder="客户手机号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 48px;">
+						<label class="layui-form-mid">性别：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="sgender" value="男" title="男" checked="">
+							<input type="radio" name="sgender" value="女" title="女">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 5px;">来源关键词：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sourceword" placeholder="来源关键词" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户学历：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="seducation" placeholder="来源关键词" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 39px;">QQ号：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sqq" placeholder="客户QQ号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户状态：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sstatus" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 33px;">微信号：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="wechatid" placeholder="客户微信号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">来源网址：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sourceurl" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">创建时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="screatetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 48px;">
+						<label class="layui-form-mid">备注：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<textarea name="sremark" placeholder="备注内容" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="layui-input-inline">
+					<div class="layui-form-item" style="margin-left: 6px;">
+						<label class="layui-form-mid">所属咨询师：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="szxsid" disabled="disabled" placeholder="所属咨询师" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">课程方向：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="course" placeholder="课程方向" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">客户打分：</label>
+						<div class="layui-input-inline">
+							<div>
+								<div id="testRate"></div>
+							</div>
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否有效：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="iseffect" value="是" title="是">
+							<input type="radio" name="iseffect" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">无效原因：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="invalidcause" placeholder="无效原因" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否回访：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isfirstvisit" value="是" title="是">
+							<input type="radio" name="isfirstvisit" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">首访时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="firstvisittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否上门：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isvisit" value="是" title="是">
+							<input type="radio" name="isvisit" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">上门时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="visittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">定金金额：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="handselmoney" placeholder="定金金额" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">定金时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="handsetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否缴费：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="paythefees" value="是" title="是">
+							<input type="radio" name="paythefees" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">缴费时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="paythefeestime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">缴费金额：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="paymentamount" placeholder="缴费金额" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否退费：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isoutpay" value="是" title="是">
+							<input type="radio" name="isoutpay" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">退费原因：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="isoutpaycause" placeholder="退费原因" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">退费时间：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="isoutpaytime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否进班：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="intheclass" value="是" title="是">
+							<input type="radio" name="intheclass" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">进班时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="intheclasstime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">进班备注：</label>
+						<div class="layui-input-inline">
+							<textarea name="intheclassremark" placeholder="进班备注" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+						<label class="layui-form-mid" style="margin-left: 5px;">咨询师备注：</label>
+						<div class="layui-input-inline">
+							<textarea name="rremark" placeholder="咨询师备注" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!--编辑-->
+		<div id="editDiv" style="display: none; margin-top: 10px;">
+			<form class="layui-form" id="editForm" lay-filter="editForm">
+				<!--客户id主键  根据id修改-->
+				<input type="text" name="sid" class="layui-input" style="display: none;">
+				<div class="layui-input-inline" style="margin-bottom: 265px;">
+					<div class="layui-form-item" style="margin-left: 6px;">
+						<label class="layui-form-mid">网络咨询师：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="loginname" id="editsxname" disabled="disabled" placeholder="所属网络咨询师" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户姓名：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sname" placeholder="客户姓名" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">客户年龄：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sage" placeholder="客户年龄" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 33px;">
+						<label class="layui-form-mid">手机号：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sphone" placeholder="客户手机号" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">来源渠道：</label>
+						<div class="layui-input-inline">
+							<select name="sourcechannel">
+								<option value="">--请选择--</option>
+								<option value="线下招生">线下招生</option>
+								<option value="百度">百度</option>
+								<option value="百度手机版">百度手机版</option>
+								<option value="360搜索">360搜索</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 48px;">
+						<label class="layui-form-mid">性别：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="sgender" value="男" title="男" checked="">
+							<input type="radio" name="sgender" value="女" title="女">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 5px;">来源关键词：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="sourceword" placeholder="来源关键词" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户学历：</label>
+						<div class="layui-input-inline">
+							<select name="seducation" required lay-verify="required">
+								<option value="">--请选择--</option>
+								<option value="未知">未知</option>
+								<option value="小学">小学</option>
+								<option value="初中">初中</option>
+								<option value="高中">高中</option>
+								<option value="大专">大专</option>
+								<option value="本科">本科</option>
+								<option value="硕士">硕士</option>
+								<option value="博士">博士</option>
+								<option value="其他">其他</option>
+							</select>
+						</div>
+						<label class="layui-form-mid" style="margin-left: 39px;">QQ号：</label>
+						<div class="layui-input-inline">
+							<input type="number" name="sqq" placeholder="客户QQ号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">客户状态：</label>
+						<div class="layui-input-inline">
+							<select name="sstatus">
+								<option value="">--请选择--</option>
+								<option value="未知">未知</option>
+								<option value="待业">待业</option>
+								<option value="在职">在职</option>
+								<option value="在读">在读</option>
+								<option value="就业">就业</option>
+							</select>
+						</div>
+						<label class="layui-form-mid" style="margin-left: 33px;">微信号：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="wechatid" placeholder="客户微信号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">来源网址：</label>
+						<div class="layui-input-inline">
+							<select name="sourceurl">
+								<option value="">--请选择--</option>
+								<option value="未知">未知</option>
+								<option value="职英A站">职英A站</option>
+								<option value="职英B站">职英B站</option>
+								<option value="群英编程官网">群英编程官网</option>
+							</select>
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">创建时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="screatetime" id="editScreatetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 48px;">
+						<label class="layui-form-mid">备注：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<textarea name="sremark" placeholder="备注内容" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="layui-input-inline">
+					<div class="layui-form-item" style="margin-left: 6px;">
+						<label class="layui-form-mid">所属咨询师：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<select name="uphone" id="uphone" class="edit">
+								<option value="">--请选择--</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">课程方向：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="course" placeholder="课程方向" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">客户打分：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="gradecase" placeholder="客户打分" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否有效：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="iseffect" value="是" title="是">
+							<input type="radio" name="iseffect" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">无效原因：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="invalidcause" placeholder="无效原因" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否回访：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isfirstvisit" value="是" title="是">
+							<input type="radio" name="isfirstvisit" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">首访时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="firstvisittime" id="editFirstvisittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否上门：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isvisit" value="是" title="是">
+							<input type="radio" name="isvisit" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">上门时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="visittime" id="editVisittime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">定金金额：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="handselmoney" placeholder="定金金额" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">定金时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="handsetime" id="editHandsetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否缴费：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="paythefees" value="是" title="是">
+							<input type="radio" name="paythefees" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">缴费时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="paythefeestime" id="editPaythefeestime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">缴费金额：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="paymentamount" placeholder="缴费金额" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否退费：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="isoutpay" value="是" title="是">
+							<input type="radio" name="isoutpay" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">退费原因：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="isoutpaycause" placeholder="退费原因" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">退费时间：</label>
+						<div class="layui-input-inline" style="width: 490px;">
+							<input type="text" name="isoutpaytime" id="editIsoutpaytime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">是否进班：</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="intheclass" value="是" title="是">
+							<input type="radio" name="intheclass" value="否" title="否">
+						</div>
+						<label class="layui-form-mid" style="margin-left: 20px;">进班时间：</label>
+						<div class="layui-input-inline">
+							<input type="text" name="intheclasstime" id="editIntheclasstime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item" style="margin-left: 20px;">
+						<label class="layui-form-mid">进班备注：</label>
+						<div class="layui-input-inline">
+							<textarea name="intheclassremark" placeholder="进班备注" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+						<label class="layui-form-mid" style="margin-left: 5px;">咨询师备注：</label>
+						<div class="layui-input-inline">
+							<textarea name="rremark" placeholder="咨询师备注" autocomplete="off" class="layui-textarea"></textarea>
+						</div>
+					</div>
+					<div class="layui-form-item" id="deitBtnDiv" style="margin-left: 90px;">
+						<label class="layui-form-mid"></label>
+						<div class="layui-input-inline">
+							<button class="layui-btn" lay-submit lay-filter="editBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- 动态推送 -->
+		<div id="dttsDiv" style="display: none; margin-top: 20px;">
+			<form class="layui-form" id="dttsForm" lay-filter="dttsForm">
+				<input type="text" name="sid" style="display: none;" placeholder="学生id" autocomplete="off" class="layui-input">
+				<input type="text" name="uphone" style="display: none;" placeholder="咨询师手机号" autocomplete="off" class="layui-input">
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">客户姓名：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sname" style="background-color: lightgray;" readonly="readonly" placeholder="客户姓名" autocomplete="off" class="layui-input">
+					</div>
+					<label class="layui-form-mid" style="margin-left: 20px;">所属咨询师：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="szxsid" style="background-color: lightgray;" readonly="readonly" placeholder="所属咨询师" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">推送内容：</label>
+					<div class="layui-input-inline" style="width: 504px;">
+						<textarea name="dcontent" id="dcontent" lay-verify="required" placeholder="请输入推送内容" autocomplete="off" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 90px;">
+					<label class="layui-form-mid"></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="dttsBtn"><i class="layui-icon">&#xe605;</i>推送</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!--数据表格头部工具栏-->
+		<div id="toolbarDemo" class="check_div">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-sm check_add" lay-event="openAdd">
+			    	<i class="layui-icon">&#xe608;</i>录入学生
+			    </button>
+				<button class="layui-btn layui-btn-sm" lay-event="exportLieBiao">
+			    	<i class="layui-icon">&#xe61f;</i>添加到列表
+			    </button>
+				<button class="layui-btn layui-btn-sm" lay-event="exportFile">
+			    	<i class="layui-icon">&#xe67d;</i>导出Excel文件
+			    </button>
+			    <button class="layui-btn layui-btn-sm check_setRoles" lay-event="exportFileWfpxs">
+			    	<i class="layui-icon">&#xe642;</i>批量修改学生所属咨询师
+			    </button>
+			    <button class="layui-btn layui-btn-sm layui-btn-danger check_deletelist" lay-event="mildDelListStuBtn">
+			    	<i class="layui-icon">&#xe640;</i>批量删除
+			    </button>
+			</div>
+		</div>
+		
+		<!-- 批量修改咨询师-->
+		<div id="PLeditDiv" style="display: none; margin-top: 30px;">
+			<form class="layui-form" id="PLeditForm" lay-filter="PLeditForm">
+				<div class="layui-form-item" style="margin-left: 20px;">
+					<label class="layui-form-mid">在线咨询师：</label>
+					<div class="layui-input-inline">
+						<select name="uphone" id="PLuphone" class="zxs" lay-search lay-filter="PLuphone">
+							<option value="">--请选择--</option>
+						</select>
+					</div>
+					<label class="layui-form-mid">所属人数：</label>
+					<div class="layui-input-inline" style="width: 120px;">
+						<input type="text" id="PLnum" readonly="readonly" style="border: hidden; color: green;" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item" style="margin-left: 105px;">
+					<label class="layui-form-mid"></label>
+					<div class="layui-input-inline">
+						<button class="layui-btn" lay-submit lay-filter="PLeditBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!--行内工具栏-->
+		<div id="barDemo" class="check_div">
+			<button class="layui-btn layui-btn-xs check_detail" lay-event="detail">
+		    	<i class="layui-icon">&#xe60b;</i>查看
+		    </button>
+		    <button class="layui-btn layui-btn-xs check_edit" lay-event="Ledit">
+		    	<i class="layui-icon">&#xe642;</i>编辑
+		    </button>
+		    <button class="layui-btn layui-btn-xs layui-btn-danger check_delete" lay-event="mildDel">
+		    	<i class="layui-icon">&#xe640;</i>删除
+		    </button>
+			{{# if(d.szxsid != "未分配"){ }}
+			<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit">
+		    	<i class="layui-icon">&#xe63a;</i>动态推送
+		    </button>
+			{{# } else { }}
+			<button class="layui-btn layui-btn-xs layui-btn-normal" style="background-color: lightgray; cursor: not-allowed;">
+		    	<i class="layui-icon">&#xe63a;</i>动态推送
+		    </button>
+			{{# } }}
+		</div>
+
+		<!--数据表格-->
+		<table id="demo" lay-filter="test"></table>
+
+		<script>
+			layui.use(['table', 'form', 'layer', 'laydate', 'element', 'upload', 'rate'], function() {
+				var table = layui.table;
+				var form = layui.form;
+				var layer = layui.layer;
+				var laydate = layui.laydate;
+				var upload = layui.upload;
+				var rate = layui.rate;
+				var $ = layui.$;
+
+				//执行一个laydate实例
+				laydate.render({
+					elem: '#screatetime', //指定元素
+					type: 'datetime'
+				});
+				laydate.render({
+					elem: '#sid', //指定元素
+					type: 'datetime'
+				});
+				
+				//咨询师的下拉框
+				$.post(globalData.server + "/students/getUsername", {
+					"token": globalData.getToken(),
+					"uid": globalData.getUid()
+				}, function(res) { //遍历返回的数据
+					$.each(res, function(index, item) {
+						$(".fmk").append(new Option(item.loginname, item.loginname));
+					});
+					layui.form.render();
+				}, "json");
+				
+				//批量修改咨询师的下拉框
+				$.post(globalData.server + "/users/getAllZxsname", {
+					"token": globalData.getToken()
+				}, function(res) { //遍历返回的数据
+					$.each(res, function(index, item) {
+						$(".zxs").append(new Option(item.loginname, item.protectmtel));
+					});
+					layui.form.render();
+				}, "json");
+				
+				//判断权限值  根据权限值显示操作按钮
+				for (var i = 0; i < tempQuanXian.length; i++) {
+					if (tempQuanXian[i] == "networtStudent:delList") {
+						$(".check_deletelist").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "networtStudent:add") {
+						$(".check_add").attr("style", "display: inline;");
+					}
+					/*批量修改学生所属咨询师*/
+					if (tempQuanXian[i] == "networtStudent:editStuZxs") {
+						$(".check_setRoles").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "networtStudent:detail") {
+						$(".check_detail").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "networtStudent:edit") {
+						$(".check_edit").attr("style", "display: inline;");
+					}
+					if (tempQuanXian[i] == "networtStudent:del") {
+						$(".check_delete").attr("style", "display: inline;");
+					}
+				}
+				
+				var uid =  globalData.getUid();	//存储id参数
+				
+				for (var i = 0; i < tempQuanXian.length; i++) {
+					if (tempQuanXian[i] == "networtStudent:getAll") {	//判断有没有查看所有学生信息的权限
+						uid = "";	//如果有 取消id参数
+					}
+				}
+
+				//渲染数据表格
+				table.render({
+					elem: '#demo',
+					url: globalData.server + "/students/getAllstu",
+					method: 'post',
+					page: true,
+					limit: '10',
+					where: {
+						'token': globalData.getToken(),
+						'ifvalid': '是', //只查询有效学生  没有被软删除的
+						'uid': uid
+					}, //验证
+					toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+					cols: [
+						[{
+								type: 'checkbox'
+							},
+							{
+								type: 'numbers',
+								title: '序号',
+								align: 'center'
+							},
+							{
+								field: 'sname',
+								title: '学生姓名',
+								width: 100,
+								align: 'center'
+							},
+							{
+								field: 'sphone',
+								title: '手机号',
+								width: 120,
+								align: 'center'
+							},
+							{
+								field: 'sage',
+								title: '年龄',
+								width: 80,
+								align: 'center'
+							},
+							{
+								field: 'sgender',
+								title: '性别',
+								width: 80,
+								align: 'center'
+							},
+							{
+								field: 'sstatus',
+								title: '状态',
+								width: 80,
+								align: 'center'
+							},
+							{
+								field: 'sqq',
+								title: '客户qq',
+								width: 120,
+								align: 'center'
+							},
+							{
+								field: 'screatetime',
+								title: '创建时间',
+								width: 160,
+								align: 'center'
+							},
+							{
+								field: 'wechatid',
+								title: '微信',
+								width: 150,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'seducation',
+								title: '学历',
+								width: 80,
+								align: 'center'
+							},
+							{
+								field: 'szxsid',
+								title: '所属咨询师',
+								width: 100,
+								align: 'center'
+							},
+							{
+								field: 'uphone',
+								title: '咨询师手机号',
+								width: 120,
+								align: 'center',
+								//自定义模板，截取手机号前三位和后四位 中间显示*
+								templet: function(d) {
+									return d.uphone == null || d.uphone == '' ? '' : d.uphone.substring(0, 3) + "****" + d.uphone.substring(7, d.uphone.length);
+								}
+							},
+							{
+								field: 'seducation',
+								title: '客户学历',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'sourceurl',
+								title: '来源网址',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'sremark',
+								title: '备注',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'gradecase',
+								title: '打分情况',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'course',
+								title: '课程方向',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'iseffect',
+								title: '是否有效',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'invalidcause',
+								title: '无效原因',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'isfirstvisit',
+								title: '首次回访',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'firstvisittime',
+								title: '首次回访时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'isvisit',
+								title: '是否上门',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'visittime',
+								title: '上门时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'handselmoney',
+								title: '定金金额',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'handsetime',
+								title: '定金时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'paythefees',
+								title: '是否缴费',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'paythefeestime',
+								title: '缴费时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'paymentamount',
+								title: '缴费金额',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'isoutpay',
+								title: '是否退费',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'isoutpaycause',
+								title: '退费原因',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'isoutpaytime',
+								title: '退费时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'intheclass',
+								title: '是否进班',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								field: 'intheclasstime',
+								title: '进班时间',
+								width: 160,
+								align: 'center',
+								hide: true
+							},
+							{
+								title: '操作',
+								align: 'center',
+								toolbar: '#barDemo'
+							}
+						]
+					],
+					id: "reloadId"
+				});
+
+				//监听提交   新增
+				form.on('submit(addBtn)', function(data) {
+					var addUrl = globalData.server + "/students/addStu"; //请求地址
+					//uid : 当前登录人员的id 我这个网络咨询师登录录入学生，这里传的就是我的id
+					var strData = $("#addForm").serialize() + "&token=" + globalData.getToken() + "&uid=" + globalData.getUid();
+					//发异步，把数据提交给java
+					$.post(addUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {
+								icon: 1
+							});
+							$("#addForm")[0].reset();
+							active.reload();
+						} else {
+							layer.msg(res.msg, {
+								icon: 5
+							});
+						}
+					}, "json");
+					return false;
+				});
+
+				var ids = []; //创建数组 存储sid参数
+				var repeatSname = []; //存储重复数据
+				//头工具栏事件
+				table.on('toolbar(test)', function(obj) {
+					switch(obj.event) {
+						case 'openAdd':
+							$.post(globalData.server + "/users/findByUid", {
+								"uid": globalData.getUid(),
+								"token": globalData.getToken()
+							}, function(res) {
+								$("#addIfweight").attr("disabled", "disabled");
+								if(res.uifweight == "是") {
+									$("#addIfweight").attr("checked", "checked");
+								} else {
+									$("#addIfweight").remove("checked");
+								}
+								layui.form.render();
+							}, "json");
+							layer.open({
+								type: 1,
+								title: '录入学生信息',
+								offset: '30px',
+								anim: 1,
+								maxmin: true,
+								area: ['650px', '600px'],
+								content: $('#addDiv')
+							});
+							break;
+						case 'exportLieBiao':
+							var check = table.checkStatus("reloadId"); //获取数据表格
+							var data = check.data; //获取数据表格里的数据
+							repeatSname = [];
+							for(var i = 0; i < data.length; i++) {
+								for(var j = 0; j < ids.length; j++) {
+									if(data[i].sid == ids[j]) {
+										repeatSname.push(data[i].sname);
+									}
+								}
+							}
+							if(repeatSname.length > 0) {
+								layer.alert("所选包含重复数据:" + repeatSname, {
+									icon: 3
+								});
+								return false;
+							}
+							//遍历数据
+							for(var i = 0; i < data.length; i++) {
+								ids.push(data[i].sid); //取出sid并添加到数组中
+							}
+							if(data.length < 1) {
+								layer.msg("您还没有选择数据", {
+									icon: 5
+								});
+								return false;
+							}
+							layer.msg("当前" + data.length + "条数据已添加至列表", {
+								icon: 1
+							});
+							break;
+						case 'exportFile':
+							if(ids == null || ids == "") { //判断是否勾选了数据	如果没有勾选  默认是导出所有
+								table.reload("reloadId", {
+									where: {"limit": 100000}, page: {curr: 1}
+								});	//重载数据表格
+								layer.confirm("确认要导出全部数据吗？", {
+									icon: 6
+								}, function() { //导出全部数据提示
+									var kmnh = layui.table.cache["reloadId"]; //获取表格的全部数据
+									for(var i = 0; i < kmnh.length; i++) { //循环遍历
+										ids.push(kmnh[i].sid); //添加到数组
+									}
+									var idJoin = ids.join(","); //使用逗号分隔参数
+									//请求地址
+									window.location.href = globalData.server + "/students/xsxxExportStudents?&token=" + globalData.getToken() + "&ids=" + idJoin;
+									layer.msg("文件已下载", {
+										icon: 1
+									}); //成功后提示
+									ids = []; //导出成功后 清空id数组 方便下次存储数据
+									table.reload("reloadId", {
+										where: {"limit": 10}, page: {curr: 1}
+									});	//重载数据表格
+								}, function() {
+									layer.msg("已取消", {
+										icon: 6
+									});
+									table.reload("reloadId", {
+										where: {"limit": 10}, page: {curr: 1}
+									});	//重载数据表格
+								});
+							} else {
+								layer.confirm("共选择了【" + ids.length + "】条数据，确认导出吗？", {
+									icon: 6
+								}, function() {
+									var idJoin = ids.join(","); //使用逗号分隔参数
+									//请求地址
+									window.location.href = globalData.server + "/students/xsxxExportStudents?&token=" + globalData.getToken() + "&ids=" + idJoin;
+									layer.msg("文件已下载", {
+										icon: 1
+									}); //成功后提示
+									ids = []; //导出成功后 清空id数组 方便下次存储数据
+									repeatSname = []; //导出成功后 清空重复数据 方便下下次提示
+									active.reload(); //重载数据表格
+								});
+							}
+							break;
+						case 'mildDelListStuBtn': //软删除
+							var check = table.checkStatus("reloadId"); //获取数据表格
+							var data = check.data; //获取数据表格里面的数据
+							var idss = []; //创建数据，存储uid
+							//遍历选中的数据
+							for(var i = 0; i < data.length; i++) {
+								idss.push(data[i].sid); //取出uid并添加到数组中
+							}
+							var idJoin = idss.join(","); //使用逗号分隔uid
+							if(idss == null || idss == "") { //判断是否勾选了数据
+								layer.msg("请先选择要删除的数据", {
+									icon: 5
+								}); //没选择给出提示
+								return false; //结束方法
+							}
+							layer.confirm("确认删除这[" + idss.length + "]条数据吗？", function() {
+								var delUrl = globalData.server + "/students/mildDel"; //请求地址
+								//请求参数
+								var strData = {
+									"sid": idJoin,
+									"ifvalid": "否",
+									"token": globalData.getToken()
+								}
+								//post请求
+								$.post(delUrl, strData, function(res) {
+									if(res > 0) {
+										layer.msg("删除成功! 可在回收站查看", {
+											icon: 1
+										});
+										active.reload();
+									} else {
+										layer.msg("删除失败!", {
+											icon: 5
+										});
+									}
+								}, "json");
+							});
+							break;
+							case 'exportFileWfpxs':
+				        	var idJoin = ids.join(","); //使用逗号分隔参数
+							if(ids == null || ids == "") { //判断是否勾选了数据
+								layer.msg("请先添加要批量分配的学生", {icon: 5});
+								return false; //如果没有勾选 给出提示并结束方法
+							}
+							layer.confirm("共选择了【" + ids.length + "】条数据，确认修改吗？", function() {
+								layer.open({
+									type: 1,
+									title: "您正在批量修改学生所属咨询师",
+									anim: 1,
+									maxmin: true,
+									offset: '30px',
+									area: ['600px', '400px'],
+									content: $('#PLeditDiv'),
+									cancel: function(index, layero) { //弹窗关闭时的回调函数
+										layer.msg("已关闭", {icon: 6}); //提示已关闭
+										$("#PLnum").val("");
+										layer.close(index); //关闭弹出层
+										return false;
+									}
+								});
+								/*监听批量修改学生所属咨询师*/
+								form.on('submit(PLeditBtn)', function(data) {
+									var addUrl = globalData.server + "/students/editStuZxsD"; //请求地址
+									var strData = $("#PLeditForm").serialize() + "&token=" + globalData.getToken() + "&ids=" + idJoin;
+									//发异步，把数据提交给java
+									$.post(addUrl, strData, function(res) {
+										if(res.code > 0) {
+											layer.closeAll();
+											layer.msg(res.msg, {icon: 1});
+											ids = [];	//分配成功后 清空id数组 方便下次存储数据
+											repeatSnameWfpxs = [];	//分配成功后 清空重复数据 方便下下次提示
+											$("#PLeditForm")[0].reset();
+											active.reload();
+										} else {
+											layer.msg(res.msg, {icon: 5});
+										}
+									}, "json");
+									return false;
+								});
+							});
+				        	break;
+						case 'LAYTABLE_TIPS': //自定义头工具栏右侧图标 - 提示
+							layer.alert('这是工具栏右侧自定义的一个图标按钮');
+							break;
+					};
+				});
+				
+				//批量修改咨询师时  显示已有的分配人数
+				form.on('select(PLuphone)', function(dataObj) {
+					provinceText = $("#PLuphone").find("option:selected").text();
+					var value = $("#PLuphone").val();
+					var kcurl = globalData.server + "/students/getCountzxsNum";
+					var kcdata = {
+						"uphone": value,
+						"token": globalData.getToken()
+					};
+					//异步加载下拉框数据
+					$.post(kcurl, kcdata, function(data) {
+						var $html = "";
+						if(data != null) {
+							$("#PLnum").val(data);
+							$("#PLnum").append($html);
+							//append后必须从新渲染
+							form.render('select');
+						}
+					}, 'json');
+				});
+
+				//监听工具条 
+				table.on('tool(test)', function(obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+					var data = obj.data; //获得当前行数据
+					var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+					var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+					var uid = data.uid; //获得当前点击的uid
+					//根据uid 查询姓名
+					var editUrl = globalData.server + "/users/findByUid"; //请求地址
+					var strData = {
+						"uid": uid,
+						"token": globalData.getToken()
+					}
+					$.post(editUrl, strData, function(res) {
+						$("#sxname").val(res.loginname);
+					}, "json");
+					if(layEvent === 'detail') { //查看
+						//渲染评分 testRate editGradecase
+						rate.render({
+							elem: '#testRate', //绑定元素
+							length: 5, //星星个数
+							theme: '#009688', //颜色
+							value: data.gradecase //初始值
+						});
+						form.val("detailForm", data); //数据回显
+						layer.open({
+							type: 1,
+							title: "您正在查看[" + data.sname + "]客户的信息",
+							anim: 1,
+							maxmin: true,
+							offset: '1px',
+							area: ['1280px', '730px'],
+							content: $('#detailDiv'),
+							cancel: function(index, layero) { //弹窗关闭时的回调函数
+								layer.msg("已关闭", {
+									icon: 6
+								}); //提示已关闭
+								layer.close(index); //关闭弹出层
+								return false;
+							}
+						});
+					} else if(layEvent === 'Ledit') { //编辑
+						form.val("editForm", data); //数据回显
+						layer.open({
+							type: 1,
+							title: "您正在编辑[" + data.sname + "]客户的信息",
+							anim: 1,
+							maxmin: true,
+							offset: '5px',
+							area: ['1280px', '730px'],
+							content: $('#editDiv')
+						})
+					} else if(layEvent === 'edit') { //动态推送
+						form.val("dttsForm", data); //数据回显
+						layer.open({
+							type: 1,
+							title: "您正在向[" + data.szxsid + "]咨询师推送信息",
+							anim: 1,
+							maxmin: true,
+							offset: '100px',
+							area: ['700px', '400px'],
+							content: $('#dttsDiv'),
+							cancel: function(index, layero) { //弹窗关闭时的回调函数
+								layer.msg("已关闭", {
+									icon: 6
+								}); //提示已关闭
+								$("#dttsForm")[0].reset();
+								layer.close(index); //关闭弹出层
+								return false;
+							}
+						});
+					}
+				});
+
+				//监听提交   编辑
+				form.on('submit(editBtn)', function(data) {
+					var editUrl = globalData.server + "/students/editStu"; //请求地址
+					var strData = $("#editForm").serialize() + "&token=" + globalData.getToken();
+					//发异步，把数据提交给java
+					$.post(editUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {
+								icon: 1
+							});
+							active.reload();
+						} else {
+							layer.msg(res.msg, {
+								icon: 5
+							});
+						}
+					}, "json");
+					return false;
+				});
+				
+				//监听提交   动态推送
+				form.on('submit(dttsBtn)', function(data) {
+					var addUrl = globalData.server + "/dynamicmessage/add"; //请求地址
+					var strData = $("#dttsForm").serialize() + "&token=" + globalData.getToken() + "&uid=" + globalData.getUid();
+					//发异步，把数据提交给java
+					$.post(addUrl, strData, function(res) {
+						if(res.code > 0) {
+							layer.closeAll();
+							layer.msg(res.msg, {
+								icon: 1
+							});
+							$("#dttsForm")[0].reset();
+							table.reload("reloadId", {
+								where: {}
+							}); //刷新数据表格  但不重置分页
+						} else {
+							layer.msg(res.msg, {
+								icon: 5
+							});
+						}
+					}, "json");
+					return false;
+				});
+
+				//点击检索按钮时触发
+				$("#searsh").on("click", function() {
+					active.reload();
+				});
+
+				/**
+				 * 重载数据表格的方法
+				 * 参数 sname sage sphone sqq sgender szxsid screatetime sourceword paythefees isvisit
+				 */
+				active = {
+					reload: function() {
+						table.reload("reloadId", {
+							where: {
+								"sname": $("#sname").val(),
+								"sage": $("#sage").val(),
+								"paymentamount": $("#bigSage").val(),
+								"sphone": $("#sphone").val(),
+								"sqq": $("#sqq").val(),
+								"sgender": $("#sgender").val(),
+								"szxsid": $("#szxsid").val(),
+								"screatetime": $("#screatetime").val(),
+								"sourceword": $("#sid").val(),
+								"paythefees": $("#paythefees").val(),
+								"isvisit": $("#isvisit").val(),
+								'iseffect': $("#iseffect").val(),
+								"token": globalData.getToken()
+							},
+							page: {
+								curr: 1
+							}
+						});
+					}
+				}
+				
+
+			//layui.use的括号
+			});
+		</script>
+	</body>
+
+</html>

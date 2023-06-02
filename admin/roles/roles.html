@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title> 资源统计系统 </title>
+		<script src="../../js/global.js"></script>
+	</head>
+	<body>
+		<div class="x-nav">
+			<span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">系统管理</a>
+		        <a><cite>角色管理</cite></a>
+	        </span>
+			<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:38px">&#xe669;</i>
+			</a>
+		</div>
+		<!-- 条件查询区域 -->
+		<div class="layui-form-item" style="margin-left: 10px;">
+			<form class="layui-form" onsubmit="return false">
+				<!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+				<div class="layui-form-item">
+					<label class="layui-form-mid">角色姓名：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="rname" placeholder="请输入角色姓名" autocomplete="off" class="layui-input">
+					</div>
+					<div class="layui-input-mid">
+						<button class="layui-btn" id="search"><i class="layui-icon">&#xe615;</i>检索</button>
+						<button type="button" id="add" class="layui-btn check_add"><i class="layui-icon">&#xe608;</i>添加角色</button>
+						<button type="button" id="delall" class="layui-btn layui-btn-danger check_deletelist">
+							<i class="layui-icon">&#xe640;</i>批量删除
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!--修改-->
+		<div id="updateDiv" style="display: none; margin-top: 50px;">
+			<form class="layui-form" id="updateForm" lay-filter="updatefilter">
+				<div class="layui-form-item">
+					<label class="layui-form-label">角色名：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="rname" placeholder="请输入角色名" autocomplete="off" required lay-verify="required" class="layui-input">
+						<input type="hidden" name="rid" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="updateForm"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- 新增 -->
+		<div id="addDiv" style="display: none; margin-top: 50px;">
+			<form class="layui-form" id="addForm">
+				<!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">角色名：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="rname" placeholder="请输入角色名" required lay-verify="required" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="addBtn"><i class="layui-icon">&#xe605;</i>提交</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!--行内工具栏-->
+		<div id="barDemo" class="check_div_toolbar">
+			<button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-xs check_setFwQx" lay-event="detail">
+				<i class="layui-icon">&#xe716;</i>设置访问权限
+			</button>
+			<button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-xs check_gongNeng" lay-event="rolesall">
+				<i class="layui-icon">&#xe716;</i>设置功能权限
+			</button>
+			<button type="button" class="layui-btn layui-btn-xs layui-btn-radius check_edit" lay-event="edit">
+				<i class="layui-icon">&#xe642;</i>编辑
+			</button>
+			<button type="button" class="layui-btn layui-btn-danger layui-btn-radius layui-btn-xs check_delete" lay-event="del">
+				<i class="layui-icon">&#xe640;</i>删除
+			</button>
+		</div>
+
+		<!--给用户新增访问模块权限-->
+		<div id="modulesDiv" style="display: none; margin-top: 20px;">
+			<div class="layui-btn-container" style="margin-left: 100px;">
+				<button type="button" class="layui-btn layui-btn-sm" lay-demo="addModules">
+					<i class="layui-icon">&#xe605;</i>保存设置
+				</button>
+			</div>
+			<div id="test1" style="margin-left: 90px;"></div>
+		</div>
+
+		<!--给用户新增操作权限-->
+		<div id="modulesDivTest" style="display: none; margin-top: 20px;">
+			<div class="layui-btn-container" style="margin-left: 100px;">
+				<button type="button" class="layui-btn layui-btn-sm" lay-demo="addPermission">
+					<i class="layui-icon">&#xe605;</i>保存设置
+				</button>
+			</div>
+			<div id="test2" style="margin-left: 90px;"></div>
+		</div>
+
+		<!--数据表格-->
+		<table id="demo" lay-filter="test"></table>
+	</body>
+
+	<!--js代码-->
+	<script>
+		/*加载Layui内置模块*/
+		layui.use(['table', 'form', 'layer', 'laydate', 'tree', 'util', 'element'], function() {
+			/*获取模块*/
+			var table = layui.table;
+			var form = layui.form;
+			var layer = layui.layer;
+			var laydate = layui.laydate;
+			var tree = layui.tree;
+			var util = layui.util;
+			var $ = layui.$;
+
+			/*渲染数据表格*/
+			table.render({
+				elem: '#demo',	//绑定容器
+				url: globalData.server + "/roles/findAll",	//请求地址
+				method: 'post',		//请求方式为post
+				page: true,	//开启分页
+				limit: '10',	//每页10条数据
+				where: {'token': globalData.getToken()},	//携带的参数  token JWT前后端分离验证
+				cols: [[	//表头
+					{type: 'checkbox'},	//复选框
+					/*序号*/
+					{type: 'numbers', title: '序号', align: 'center', width: 300},
+					/*field：列绑定数据名称   title：标题名  */
+					{field: 'rname', title: '角色名', align: 'center'}, 
+					{field: '工具栏', toolbar: '#barDemo'}
+				]],
+				id: "reloadId"	//数据表格的id，当前数据表格的唯一标识
+			});
+
+			//监听行内工具栏
+			table.on('tool(test)', function(obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+				var data = obj.data; //获得当前行数据
+				var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+				form.val('updatefilter', data);	//数据回显
+				if(layEvent === 'del') { //删除
+					layer.confirm('确认删除吗', function(index) {
+						//请求地址
+						var url = globalData.server + "/roles/deleteRid";
+						$.post(url, {
+							"rids": data.rid,	//id参数
+							"token": globalData.getToken()	//JWT前后端分离验证
+						}, function(res) {
+							if (res.code > 0) {	//判断返回的状态码  大于0表示成功
+								layer.closeAll();	//关闭所有弹框
+								layer.msg(res.msg, {icon : 1});	//成功后的提示
+								active.reload();	//重载数据表格
+							} else {
+								layer.msg(res.msg, {icon : 2});	//失败后的提示
+							}
+						}, "json");
+						return false;	//防止表单重复提交
+					});
+				} else if(layEvent === 'edit') { //编辑
+					layer.open({	//弹框
+						type: 1,	//1代表弹出的是DOM元素	
+						anim: 1,	//动画
+						offset: '100px',	//偏移
+						area: ['400px', '300px'],	//区域
+						title: '修改角色信息',	//弹框标题
+						content: $('#updateDiv')	//绑定容器
+					});
+				} else if(layEvent === 'detail') { //设置模块访问权限
+					layer.open({	//弹框
+						type: 1,	//1代表弹出的是DOM元素	
+						title: "您正在设置[" + data.rname + "]角色的访问权限",	//弹框标题
+						area: ['500px', '600px'],	//区域
+						anim: 1,	//动画
+						maxmin: true,	//最大最小化
+						offset: '100px',	//偏移
+						content: $('#modulesDiv')	//绑定容器
+					});
+					var mkurl = globalData.server + "/modules/getAll";	//请求地址
+					//请求参数token  JWT前后端分离验证
+					var mkdata = {
+						'token': globalData.getToken()
+					}
+					//post异步请求
+					$.post(mkurl, mkdata, function(res) {
+						//渲染tree组件
+						var inst1 = tree.render({
+							elem: '#test1', //绑定元素
+							data: res,	//设置数据
+							id: 'demoId1',	//当前tree组件的唯一标识
+							showCheckbox: true, //是否显示复选框
+							click: function(obj) {	//点击节点时触发的事件
+								//这个是获取当前节点的数据
+								var data = obj.data.id; //获取当前点击的节点数据
+								layer.msg(obj.data.title);	//提示当前节点名称
+							}
+						});
+						//监听按钮事件	点击保存设置按钮时触发
+						util.event('lay-demo', {
+							addModules: function() {
+								var ids = []; //存储筛选的id
+								var mid = []; //存储发送给控制器的id
+								//这个时候，如果你声明了ID,那么你这个tree.getChecked()函数是可以用的，如果你没用添加id属性，则会提示你这个方法找不到
+								var checkData = tree.getChecked('demoId1');
+								for(var i = 0; i < checkData.length; i++) {
+									mid.push(checkData[i].id);	//将id添加到数组
+									ids.push(checkData[i].children); //将子属性添加到数组
+									//判断是否有子节点 设置权限只对子节点进行勾选
+									if (ids[i] == null || ids[i] == "") {
+										//如果没有  给出提示
+										layer.msg("["+checkData[i].title+"]模块下没有子模块，无法设置访问权限", {icon : 2});
+										return false;	//结束方法
+									} else {
+										//如果有  把勾选的子节点的id添加到数组
+										for(var j = 0; j < ids[i].length; j++) {
+											mid.push(ids[i][j].id);	//添加
+										}
+									}
+								}
+								var idJoin = mid.join(","); //分割参数
+								//请求地址
+								var editurl = globalData.server + "/modules/deleteRidAndInsert";
+								//发送的参数
+								var editdata = {
+									'rid': data.rid,	//当前角色的id
+									'mid': idJoin,	//勾选的权限的id
+									'token': globalData.getToken()	//JWT前后端分离验证
+								};
+								//异步请求
+								$.post(editurl, editdata, function(num) { 
+									if(num.code > 0) {	//判断返回的状态码  大于0代表成功
+										layer.msg(num.msg, {icon : 1});	//提示消息
+									} else {
+										layer.msg(num.msg, {icon : 2});	//提示消息
+									}
+								}, "json");
+							}
+						});
+						//请求地址 
+						var jdurl = globalData.server + "/modules/getByRid";
+						//请求参数
+						var jddata = {
+							//这里的data是182行的data 获取我点击的当前角色的id
+							'rid': data.rid,
+							'token': globalData.getToken()	//JWT前后端分离验证
+						}
+						/**
+						 * post异步请求
+						 * res为当前拥有哪些权限
+						 */
+						$.post(jdurl, jddata, function(res) {
+							tree.setChecked('demoId1', res); //勾选拥有的权限的节点
+						}, "json");
+					}, "json");
+				} else if(layEvent === 'rolesall') { //设置操作权限
+					$("#test2").html("");	//清空数据
+					layer.open({	//弹框
+						type: 1,	//1代表弹出的是DOM元素	
+						title: "您正在设置[" + data.rname + "]角色的操作功能",	//标题
+						area: ['500px', '600px'],	//弹框大小
+						anim: 1,	//弹框弹出动画
+						offset: '100px',	//偏移
+						content: $('#modulesDivTest')	//绑定元素
+					});
+					//请求地址
+					var gnkurl = globalData.server + "/permission/findAll"
+					//请求参数
+					var gndata = {
+						'rid': data.rid,
+						'token': globalData.getToken()
+					}
+					//post异步请求
+					$.post(gnkurl, gndata, function(res) {
+						//渲染tree组件
+						var inst1 = tree.render({
+							elem: '#test2', //绑定元素
+							data: res,	//设置数据
+							id: 'demoId1',	//当前tree的唯一标识
+							showCheckbox: true, //开启显示复选框
+							click: function(obj) {
+								//这个是获取当前节点的数据
+								var data = obj.data.id; //获取当前点击的节点数据
+								layer.msg(obj.data.title);
+							}
+						});
+						//监听按钮事件	点击保存设置按钮时触发
+						util.event('lay-demo', {
+							addPermission: function() {
+								var ids = []; //存储筛选的id
+								var mid = []; //存储发送给控制器的id
+								//这个时候，如果你声明了ID,那么你这个tree.getChecked()函数是可以用的，如果你没用添加id属性，则会提示你这个方法找不到
+								var checkData = tree.getChecked('demoId1');
+								for(var i = 0; i < checkData.length; i++) {
+									mid.push(checkData[i].id);
+									ids.push(checkData[i].children); //开始递归调用
+									if (ids[i] == null || ids[i] == "") {
+										layer.msg("["+checkData[i].title+"]模块下没有子模块，无法设置操作权限", {icon : 2});
+										return false;
+									} else {
+										for(var j = 0; j < ids[i].length; j++) {
+											mid.push(ids[i][j].id);
+										}
+									}
+								}
+								var idJoin = mid.join(","); //分割参数
+								var editurl = globalData.server + "/permission/deleteRidRoleid";
+								var editdata = {
+									'rid': data.rid,
+									'roleid': idJoin,
+									'token': globalData.getToken()
+								};
+								$.post(editurl, editdata, function(num) { //异步请求
+									if(num.code > 0) {
+										layer.msg(num.msg, {icon : 1});
+									} else {
+										layer.msg(num.msg, {icon : 2});
+									}
+								}, "json");
+							}
+						});
+						var jdurl = globalData.server + "/permission/getByRoleid";
+						var jddata = {
+							//这里的data是182行的data 获取我点击的当前角色的id
+							'rid': data.rid,
+							'token': globalData.getToken()
+						}
+						$.post(jdurl, jddata, function(res) {
+							tree.setChecked('demoId1', res); //勾选指定节点
+						}, "json");
+					}, "json");
+				}
+			});
+			
+			/**
+			 * 监听修改按钮
+			 */
+			form.on('submit(updateForm)', function(data) {
+				//请求地址
+				var url = globalData.server + "/roles/editRoles";
+				//请求参数    $("#updateForm").serialize()：表单序列化提交
+				var data = $("#updateForm").serialize() + "&token=" + globalData.getToken();
+				//post异步请求
+				$.post(url, data, function(res) {
+					if(res.code > 0) {	//判断返回的状态码  大于0代表成功
+						layer.closeAll();	//关闭弹窗
+						layer.msg(res.msg, {icon : 1});	//提示消息
+						//重载数据表格
+						table.reload("reloadId", {
+							where: {
+								"token": globalData.getToken()
+							}
+						});
+					} else {
+						layer.msg(res.msg, {icon : 2}); //失败提示的消息
+					}
+				}, "json");
+				return false;	//防止表单重复提交
+			});
+			
+			//点击添加按钮触发
+			$("#add").on("click", function() {
+				layer.open({	//弹框
+					type: 1,	//1代表弹出的是DOM元素
+					title: '添加角色',		//标题
+					anim: 1,	//动画
+					offset: '100px',	//偏移
+					area: ['400px', '300px'],	//区域
+					content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+				});
+			});
+
+			//监听添加提交
+			form.on('submit(addBtn)', function(data) {
+				//请求地址
+				var addUrl = globalData.server + "/roles/addRoles";
+				//请求参数    $("#addForm").serialize()：表单序列化提交
+				var strData = $("#addForm").serialize() + "&token=" + globalData.getToken();
+				//post异步请求
+				$.post(addUrl, strData, function(res) {
+					if(res.code > 0) {	//判断返回的状态码  大于0代表成功
+						layer.closeAll();	//关闭弹窗
+						layer.msg(res.msg, {icon: 1});	//提示消息
+						active.reload();	//重载数据表格
+						$("#addForm")[0].reset();	//重置添加的form表单
+					} else {
+						layer.msg(res.msg, {icon: 2});	//失败提示的消息
+					}
+				}, "json");
+				return false;	//防止表单重复提交
+			});
+
+			//批量删除
+			$("#delall").on("click", function() {
+				var check = table.checkStatus("reloadId"); //获取数据表格
+				var data = check.data; //获取数据表格里面的数据
+				var ids = []; //创建数据，存储uid
+				//遍历选中的数据
+				for(var i = 0; i < data.length; i++) {
+					ids.push(data[i].rid); //取出uid并添加到数组中
+				}
+				var idJoin = ids.join(","); //使用逗号分隔uid
+				if(ids == null || ids == "") { //判断是否勾选了数据
+					layer.msg("请先选择要删除的数据", {icon : 5}); //没选择给出提示
+					return false; //结束方法
+				}
+				//确认对话框
+				layer.confirm("确认删除这[" + ids.length + "]条数据吗？", function() {
+					var delUrl = globalData.server + "/roles/deleteRid"; //请求地址
+					//请求参数
+					var strData = {
+						"rids": idJoin,	//要删除的数据的id
+						"token": globalData.getToken()	//JWT前后端分离验证
+					}
+					//post异步请求
+					$.post(delUrl, strData, function(res) {
+						if(res > 0) {	//res为int 如果大于0说明成功
+							layer.msg("删除成功!", {icon : 1});	//成功的提示消息
+							active.reload();	//重载数据表格
+						} else {
+							layer.msg("删除失败!", {icon : 2});	//失败的提示消息
+						}
+					}, "json");
+				});
+			});
+
+			//点击检索按钮时触发
+			$("#search").on("click", function() {
+				active.reload();	//调用方法
+				return false;	//防止表单重复提交
+			});
+
+			/**
+			 * 重载数据表格的方法
+			 * 参数 rname
+			 */
+			active = {
+				reload: function() {
+					table.reload("reloadId", {
+						where: {
+							//条件查询的参数
+							"rname": $("#rname").val(),
+							"token": globalData.getToken()
+						},
+						page: {
+							curr: 1
+						}
+					});
+				}
+			}
+
+			//判断权限值  根据权限值显示操作按钮
+			for(var i = 0; i < tempQuanXian.length; i++) {
+				if(tempQuanXian[i] == "relos:deletelist") {
+					$(".check_deletelist").attr("style", "display: inline;");
+				}
+				if(tempQuanXian[i] == "relos:add") {
+					$(".check_add").attr("style", "display: inline;");
+				}
+				if(tempQuanXian[i] == "relos:setFwQx") {
+					$(".check_setFwQx").attr("style", "display: inline;");
+				}
+				if(tempQuanXian[i] == "relos:edit") {
+					$(".check_edit").attr("style", "display: inline;");
+				}
+				if(tempQuanXian[i] == "relos:delete") {
+					$(".check_delete").attr("style", "display: inline;");
+				}
+				if(tempQuanXian[i] == "relos:gongNeng") {
+					$(".check_gongNeng").attr("style", "display: inline;");
+				}
+			}
+
+		//layui.use()的括号
+		});
+	</script>
+
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用户管理</title>
+		<script src="../../js/global.js"></script>
+		<script src="../../js/jquery.mailAutoComplete-4.0.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="x-nav">
+	        <span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">系统管理</a>
+		        <a><cite>用户管理</cite></a>
+	        </span>
+	        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+	          <i class="layui-icon" style="line-height:38px">&#xe669;</i>
+	        </a>
+	    </div>
+		<!-- 条件查询区 -->
+		<div class="layui-form-item" style="margin-left: 10px;">
+			<form class="layui-form" action="">
+				<label class="layui-form-mid">用户名：</label>
+				<div class="layui-input-inline" style="width: 150px;">
+		            <input type="text" id="searchLoginname" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+		        </div>
+		        <label class="layui-form-mid">登录时间：</label>
+		        <div class="layui-input-inline" style="width: 150px;">
+		          <input type="text" id="beginTime" placeholder="开始时间" autocomplete="off" class="layui-input">
+		        </div>
+		        <div class="layui-form-mid">-</div>
+		        <div class="layui-input-inline" style="width: 150px;">
+		          <input type="text" id="endTime" placeholder="结束时间" autocomplete="off" class="layui-input">
+		        </div>
+		        <label class="layui-form-mid">是否锁定：</label>
+				<div class="layui-input-inline" style="width: 100px;">
+		            <select id="searchIslockout">
+						<option value="">--请选择--</option>
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+				<label class="layui-form-mid">排序：</label>
+				<div class="layui-input-inline" style="width: 130px;">
+		            <select id="searchProtectmtel">
+						<option value="">--请选择--</option>
+						<option value="创建时间">创建时间</option>
+						<option value="最后登录时间">最后登录时间</option>
+					</select>
+		        </div>
+				<button class="layui-btn" type="button" id="searsh">
+			        <i class="layui-icon">&#xe615;</i>检索
+			    </button>
+			</form>
+		</div>
+		
+		<!--顶部工具栏-->
+		<div id="" style="margin-left: 20px;">
+			<button class="layui-btn layui-btn-danger layui-btn-sm check_deletelist" id="delBtn"><i class="layui-icon">&#xe640;</i>批量删除</button>
+		    <button class="layui-btn layui-btn-sm check_add" id="openAdd"><i class="layui-icon">&#xe608;</i>添加用户</button>
+		</div>
+	  	
+	  	<!--添加弹出区-->
+	  	<div class="x-body layui-anim layui-anim-up" id="addDiv" style="display: none; margin-top: 50px;">
+	  		<div id="" style="margin-left: 30px;">
+	  			<form class="layui-form" id="addForm">
+	  				<input type="text" name="lastlogintime" id="addLastlogintime" class="layui-input" style="display: none;">
+		  			<div class="layui-form-item">
+		  				<label for="L_email" class="layui-form-label">
+		  	            	<span class="x-red">*</span>用户名
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="loginname" id="addLoginName" onblur="cPLoginname()" required lay-verify="required" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+		  				</div>
+		  				<div class="layui-form-mid" id="addLoginNameMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red"></span>
+		  	            </label>
+		  				<div class="layui-input-inline" style="color: red; width: 500px;">
+		  					*点击右侧上传按钮，上传身份证正面照片，可自动扫描身份证号
+		  				</div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>身份证号
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="idcard" id="showIdCard" onblur="cPLoginname()" required lay-verify="required|identity" autocomplete="off" placeholder="请输入身份证号" class="layui-input">
+		  				</div>
+		  				<button type="button" class="layui-btn" id="uploadIdCred">
+						    <i class="layui-icon">&#xe67c;</i>上传图片
+						</button>
+						<div class="layui-form-mid" id="addIdcardMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>手机号
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="protectmtel" id="addProtectmtel" onblur="cPLoginname()" required lay-verify="required|phone" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+		  				</div>
+		  				<div class="layui-form-mid" id="addProtectmtelMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>邮箱
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="protectemail" id="addProtectemail" onblur="cPLoginname()" required lay-verify="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input yx">
+		  				</div>
+		  				<div class="layui-form-mid" id="addProtectemailMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_repass" class="layui-form-label"> </label>
+		  				<input type="button" lay-submit id="addBtn" lay-filter="addBtn" class="layui-btn" value="提交">
+		  			</div>
+		  		</form>
+	  		</div>
+	  	</div>
+	  	
+	  	<!--修改弹出区-->
+	  	<div class="x-body layui-anim layui-anim-up" id="editDiv" style="display: none; margin-top: 50px;">
+	  		<div id="" style="margin-left: 30px;">
+		  		<form class="layui-form" id="editForm" lay-filter="editForm">
+		  			<input type="text" name="uid" class="layui-input" style="display: none;">
+		  			<input type="text" name="createtime" id="editLastlogintime" class="layui-input" style="display: none;">
+		  			<div class="layui-form-item">
+		  				<label for="L_email" class="layui-form-label">
+		  	            	<span class="x-red">*</span>真实姓名
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="loginname" id="editLoginname" onblur="editRepeat()" required lay-verify="required" autocomplete="off" placeholder="请输入新用户名" class="layui-input">
+		  				</div>
+		  				<div class="layui-form-mid" id="editLoginnameMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>身份证号
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="idcard" id="editIdcarde" onblur="editRepeat()" required lay-verify="required|identity" autocomplete="off" placeholder="请输入新身份证号" class="layui-input">
+		  				</div>
+		  				<div class="layui-form-mid" id="editIdcardeMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>手机号
+		  	            </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="protectmtel" id="editProtectmtel" onblur="editRepeat()" required lay-verify="required|phone" autocomplete="off" placeholder="请输入新手机号" class="layui-input">
+		  				</div>
+		  				<div class="layui-form-mid" id="editProtectmtelMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>邮箱
+		  	           </label>
+		  				<div class="layui-input-inline">
+		  					<input type="text" name="protectemail" id="editProtectemail" onblur="editRepeat()" required lay-verify="email" autocomplete="off" placeholder="请输入新邮箱" class="layui-input yx">
+		  				</div>
+		  				<div class="layui-form-mid" id="editProtectemailMsg" style="color: red;"></div>
+		  			</div>
+		  			<div class="layui-form-item">
+		  				<label for="L_repass" class="layui-form-label"> </label>
+		  				<input type="button" lay-submit id="editBtn" lay-filter="editBtn" class="layui-btn" value="提交">
+		  			</div>
+		  		</form>
+	  		</div>
+	  	</div>
+	  	
+	  	<!--穿梭框-->
+		<div id="cskDiv" style="display: none; margin-top: 50px;">
+			<div id="testCsk" style="margin-left: 90px;"></div>
+		</div>
+		
+		<!--数据表格-->
+		<table id="demo" lay-filter="test"></table>
+		
+		<!-- 行内工具栏 -->
+		<div id="barDemo" class="check_div_toolbar">
+			<button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-xs check_setRoles" lay-event="editrole">设置角色</button>
+			<button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-xs check_resetPwd" lay-event="detail">重置密码</button>
+			<button type="button" class="layui-btn layui-btn-xs layui-btn-radius check_edit" lay-event="edit">编辑</button>
+			<button type="button" class="layui-btn layui-btn-danger layui-btn-radius layui-btn-xs check_delete" lay-event="del">删除</button>
+		</div>
+		
+		<!-- 是否锁定 滑动按钮 -->
+	    <script type="text/html" id="switchSuoDing">
+	    	<input type="checkbox" class="check_lockUser" value="{{d.uid}}" lay-skin="switch" lay-text="锁定|正常"  lay-filter="isSuoDing" {{d.islockout == '是' ? 'checked' : '' }}>
+	    </script>
+		
+	</body>
+	
+	<script>
+		layui.use(['table','form','layer','laydate','transfer','element','upload'],function(){
+			var table = layui.table;
+			var form = layui.form;
+			var layer = layui.layer;
+			var laydate = layui.laydate;
+			var transfer = layui.transfer;
+			var upload = layui.upload;
+			var $ = layui.$;
+			
+			//执行一个laydate实例
+			laydate.render({
+			  elem: '#beginTime', //指定元素
+			  type: 'datetime'
+			});
+			laydate.render({
+			  elem: '#endTime', //指定元素
+			  type: 'datetime'
+			});
+			
+			//渲染数据表格
+			table.render({
+				elem:'#demo',
+				url: globalData.server + "/users/getAllUsers",
+				page:true,
+				limit: '10',
+				where: {'token': globalData.getToken()}, //验证
+				cols:[[
+					{type:'checkbox'},
+					{type: 'numbers', title: '序号', align:'center', width: 30},
+					{field: 'loginname', title: '真实姓名', align:'center', width: 130},
+					{field: 'lastlogintime', title: '最后登陆时间', align:'center', width: 160},
+					{field: 'createtime', title: '创建时间', align:'center', width: 160},
+					{field: 'psdwrongtime', title: '密码错误次数', align:'center', width: 120},
+					{field: 'locktime', title: '被锁定时间', align:'center', width: 160},
+					{field: 'protectemail', title: '邮箱', align:'center', width: 190},
+					{field: 'protectmtel', title: '手机号', width: 120, align: 'center',
+							//自定义模板，截取手机号前三位和后四位 中间显示*
+							templet:function(d){ 
+								return d.protectmtel == null || d.protectmtel == '' ? '': d.protectmtel.substring(0,3)+"****"+d.protectmtel.substring(7,d.protectmtel.length);
+							}
+					},
+					{field: 'islockout', title: '是否锁定', align:'center', templet: '#switchSuoDing', width: 100},
+					{title: '操作',align: 'center',toolbar: '#barDemo'}
+				]],
+				id: "reloadId"
+			});
+			
+			//监听工具条 
+			table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+			    var data = obj.data; //获得当前行数据
+			    var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+			    if(layEvent === 'detail'){ //密码重置
+			        layer.confirm("把["+ data.loginname +"]用户的密码重置为:(~身份证后六位数),确认继续吗？", function(index){
+			        	var idcard = data.idcard;	//获取当前用户的身份证号
+			        	var password = idcard.length;	//获取身份证号的长度
+			        	var shortName = idcard.substring(password-6, password);	//截取后六位
+			        	var editUrl = globalData.server + "/users/resetPwd";	//请求地址
+						var strData = {
+					    	"uid": data.uid,	//用户唯一标识
+					    	"password": "~" + shortName,	//重置后的密码
+					    	"token": globalData.getToken()	//token参数
+					    }
+						$.post(editUrl, strData, function(res){	//异步请求
+							if (res > 0) {
+								layer.msg("密码重置成功！", {icon: 6});
+								table.reload("reloadId", {where: {"token" : globalData.getToken()}});
+							} else {
+								layer.msg("密码重置失败", {icon: 5});
+							}
+						}, "json");
+			    	});
+			    } else if(layEvent === 'del'){ //删除
+			    	layer.confirm("确认删除用户["+ data.loginname +"]吗？", function(index){
+			        	var delUrl = globalData.server + "/users/delUser";
+						var strData = {
+					    	"uid": data.uid,
+					    	"uuid" : globalData.getUid(),
+					    	"token": globalData.getToken()
+					    }
+						$.post(delUrl, strData, function(res){
+							if (res.code > 0) {
+								layer.msg(res.msg, {icon: 1});
+								active.reload();
+							} else {
+								layer.msg(res.msg, {icon: 5});
+							}
+						}, "json");
+			    	});
+			    } else if(layEvent === 'edit'){ //编辑
+					form.val("editForm", data);	//数据回显
+			    	layer.open({
+						type: 1,
+						title: "您正在编辑["+ data.loginname +"]用户的信息",
+						anim: 1,
+						offset: '100px',
+						area: ['500px', '550px'],
+						content: $('#editDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+					});
+			    } else if (layEvent === "editrole") {	//设置角色
+			    	//弹出穿梭框					
+					layer.open({
+						type: 1,
+						title: "您正在设置["+ data.loginname +"]用户的角色",
+						offset: '80px',
+						anim: 1,
+						area: ['700px', '600px'],
+						content: $('#cskDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+					});
+			    	var uid = data.uid;	//获取当前用户的id
+					var url = globalData.server + "/roles/getAll";	//请求地址
+					var strData = {"token": globalData.getToken()};	//token参数
+					$.post(url, strData, function(resData) {	//异步请求
+						var rdata = [];	//存储角色id
+						var url1 = globalData.server + "/roles/getUserRoles";	//请求地址
+						var data1 = {
+							"uid": uid,
+							"token": globalData.getToken()
+						};	//参数
+						//再次请求服务器  获取指定用户的角色
+						$.post(url1, data1, function(res) {
+							if(res.length > 0) {	//如果有角色
+								for(var i = 0; i < res.length; i++) {	//遍历
+									rdata.push(res[i].rid);	//将角色的id添加到数组
+								}
+							}
+							transfer.render({	//渲染穿梭框
+								elem: '#testCsk',	//绑定元素
+								title: ["系统角色", "已有角色"],	//穿梭框标题
+								showSearch: true,
+								data: resData,	//左侧数据
+								value: rdata,	//右侧数据
+								parseData: function(r) {
+									return {
+										"value": r.rid,
+										"title": r.rname
+									}
+								},
+								id: "demo1",
+								//穿梭事件
+								onchange: function(obj, index) {
+									//obj 被穿梭的数据
+									//index 0 说明数据来自于左边 反之来自于右边
+									if(index == "0") {
+										//给用户添加角色
+										for(var i = 0; i < obj.length; i++) {
+											var url3 = globalData.server + "/users/addRoles";
+											var data3 = {
+												"uid": uid,
+												"rid": obj[i].value,
+												"token": globalData.getToken()
+											};
+											$.post(url3, data3, function(res) {
+												if (res > 0) {
+													layer.msg("设置成功", {icon : 1});
+												} else {
+													layer.msg("设置失败", {icon : 2});
+												}
+											}, "json");
+										}
+									} else {
+										//移除用户的角色
+										for(var i = 0; i < obj.length; i++) {
+											var u3 = globalData.server + "/users/delRoles";
+											var d3 = {
+												"uid": uid,
+												"rid": obj[i].value,
+												"token": globalData.getToken()
+											}
+											$.post(u3, d3, function(res) {
+												if (res > 0) {
+													layer.msg("移除成功", {icon : 1});
+												} else {
+													layer.msg("移除失败", {icon : 2});
+												}
+											}, "json");
+										}
+									}
+								}
+							});
+						}, "json");
+					}, "json");
+			    }
+			});
+			
+			//监听提交   修改
+			form.on('submit(editBtn)', function(data) {
+				$("#editLastlogintime").val("执行修改操作");
+				var addUrl = globalData.server + "/users/edit";	//请求地址
+				var strData = $("#editForm").serialize() + "&token=" + globalData.getToken();	//请求参数
+				//发异步，把数据提交给java
+				$.post(addUrl, strData, function(res){
+					if (res.code == 0) {
+						layer.closeAll();
+						layer.msg(res.msg, {icon: 1});
+						table.reload("reloadId", {
+			    			where: {
+			    				"token" : globalData.getToken()
+			    			}
+			    		});
+					} else {
+						layer.msg(res.msg, {icon: 5});
+					}
+				}, "json");
+				return false;
+			});
+			
+			//监听是否锁定
+			form.on('switch(isSuoDing)', function(data){
+			    var id = data.value;
+			    if (data.elem.checked == true) {
+					var status = "是";
+			    } else {
+					var status = "否";
+			    }
+			    var editUrl = globalData.server + "/users/editIslockout";
+			    var strData = {
+			    	"uid": id,
+			    	"uuid" : globalData.getUid(),
+			    	"islockout": status,
+			    	"token": globalData.getToken()
+			    }
+			    $.post(editUrl,strData,function(res) {
+			    	if (res > 0) {
+			    		if (status == "是") {
+			    			layer.msg("已锁定", {icon: 1});
+			    		} else {
+			    			layer.msg("已解锁", {icon: 1});
+			    		}
+			    		table.reload("reloadId", {
+			    			where: {
+			    				"token" : globalData.getToken()
+			    			}
+			    		});
+			    	} else if (res == 0) {
+			    		layer.msg("该用户正在登录不能锁定", {icon: 2});
+			    		table.reload("reloadId", {
+			    			where: {
+			    				"token" : globalData.getToken()
+			    			}
+			    		});
+			    	} else {
+			    		layer.msg("状态错误", {icon: 2});
+			    	}
+			    },"json");
+			});
+			
+			//添加弹框
+			$("#openAdd").on("click", function(){
+			  	layer.open({
+					type: 1,
+					title: '添加用户',
+					offset: '100px',
+					anim: 1,
+					area: ['650px', '550px'],
+					content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+				});
+			});
+			
+			//执行实例  上传身份证照片
+		    var uploadInst = upload.render({
+		        elem: '#uploadIdCred', //绑定元素
+		    	url: globalData.server + "/users/testScanIdCard?&token=" + globalData.getToken(), //上传接口
+		    	done: function(res){	//上传完毕回调
+		    		if (res.code == 0) {
+		    			$("#showIdCard").val(res.msg);
+			      		layer.msg("读取成功", {icon : 6});
+		    		} else {
+		    			layer.msg(res.msg, {icon : 5});
+		    		}
+			    },
+		    	error: function(){	//请求异常回调
+		      		layer.msg(res.msg, {icon : 2});
+		    	}
+		    });
+		    
+			
+			//监听提交   新增
+			form.on('submit(addBtn)', function(data) {
+				$("#addLastlogintime").val("执行添加操作");
+				var addUrl = globalData.server + "/users/addUsers";	//请求地址
+				var strData = $("#addForm").serialize() + "&token=" + globalData.getToken();
+				//发异步，把数据提交给java
+				$.post(addUrl, strData, function(res){
+					if (res.code == 0) {
+						layer.closeAll();
+						layer.msg(res.msg, {icon: 1});
+						active.reload();
+						$("#addForm")[0].reset();
+					} else {
+						layer.msg(res.msg, {icon: 5});
+					}
+				}, "json");
+				return false;
+			});
+			
+			//批量删除
+			$("#delBtn").on("click", function(){
+				var check = table.checkStatus("reloadId");	//获取数据表格
+				var data = check.data;	//获取数据表格里面的数据
+				var ids = [];	//创建数据，存储uid
+				//遍历选中的数据
+				for (var i = 0; i < data.length; i++) {
+					ids.push(data[i].uid);	//取出uid并添加到数组中
+				}
+				var idJoin = ids.join(",");  //使用逗号分隔uid
+				if (ids == null || ids == "") {	//判断是否勾选了数据
+					layer.msg("请先选择要删除的数据", {icon : 5});	//没选择给出提示
+					return false;	//结束方法
+				}
+				layer.confirm("确认删除这["+ ids.length +"]条数据吗？", function(){
+					var delUrl = globalData.server + "/users/delUser";	//请求地址
+					//请求参数
+					var strData = {
+						"uid": idJoin,
+						"uuid" : globalData.getUid(),
+						"token": globalData.getToken()
+					}
+					//post请求
+					$.post(delUrl, strData, function(res){
+						if (res.code > 0) {
+							layer.msg(res.msg, {icon : 1});
+							active.reload();
+						} else{
+							layer.msg(res.msg, {icon : 5});
+						}					
+					}, "json");
+				});
+			});
+			
+			//点击检索按钮时触发
+			$("#searsh").on("click", function(){
+				active.reload();
+			});
+			
+			/**
+			 * 重载数据表格的方法
+			 * 参数 loginname  beginTime endTime  searchIslockout searchProtectmtel
+			 */
+			active = {
+			  	reload : function () {
+			  		table.reload("reloadId", {
+			  			where : {
+			  				"loginname" : $("#searchLoginname").val(),
+			  				"lastlogintime" : $("#beginTime").val(),
+			  				"locktime" : $("#endTime").val(),
+			  				"islockout" : $("#searchIslockout").val(),
+			  				"protectmtel" : $("#searchProtectmtel").val(),
+			  				"token" : globalData.getToken()
+			  			},
+			  			page : {
+			  				curr : 1
+			  			}
+			  		});
+			  	}
+			}
+			
+			//判断权限值  根据权限值显示操作按钮
+			for (var i = 0; i < tempQuanXian.length; i++) {
+				if (tempQuanXian[i] == "user:deletelist") {
+					$(".check_deletelist").attr("style", "display: inline;");
+				}
+				if (tempQuanXian[i] == "user:add") {
+					$(".check_add").attr("style", "display: inline;");
+				}
+				if (tempQuanXian[i] == "user:setRoles") {
+					$(".check_setRoles").attr("style", "display: inline;");
+				}
+				if (tempQuanXian[i] == "user:resetPwd") {
+					$(".check_resetPwd").attr("style", "display: inline;");
+				}
+				if (tempQuanXian[i] == "user:edit") {
+					$(".check_edit").attr("style", "display: inline;");
+				}
+				if (tempQuanXian[i] == "user:delete") {
+					$(".check_delete").attr("style", "display: inline;");
+				}
+			}
+			
+			//邮箱提示框的方法
+			$(".yx").mailAutoComplete(); //使用方法
+						
+		//layui.use的结束括号
+		});
+		
+		/**
+		 * 验证添加时是否重复的失去焦点事件
+		 */
+		function cPLoginname(){
+			$("#addLastlogintime").val("");
+			var addUrl = globalData.server + "/users/addUsers";	//请求地址
+			var strData = $("#addForm").serialize() + "&token=" + globalData.getToken();
+			//发异步，把数据提交给java
+			$.post(addUrl, strData, function(res){
+				if (res.code == 5) {
+					$("#addIdcardMsg").html("*" + res.msg);
+					$("#addProtectmtel").attr("disabled","disabled");
+					$("#addProtectmtel").css("background-color","#aaa");
+					$("#addProtectemail").attr("disabled","disabled");
+					$("#addProtectemail").css("background-color","#aaa");
+					$("#addBtn").css("background-color","#aaa");
+					$("#addBtn").attr("disabled","disabled");
+				} else {
+					$("#addIdcardMsg").html("");
+					$("#addProtectmtel").removeAttr("disabled");
+					$("#addProtectmtel").removeAttr("style");
+					$("#addProtectemail").removeAttr("disabled");
+					$("#addProtectemail").removeAttr("style");
+					$("#addBtn").removeAttr("disabled");
+					$("#addBtn").removeAttr("style");
+				}
+				if (res.code == 6) {
+					$("#addProtectmtelMsg").html("*" + res.msg);
+					$("#addProtectemail").attr("disabled","disabled");
+					$("#addProtectemail").css("background-color","#aaa");
+					$("#addBtn").css("background-color","#aaa");
+					$("#addBtn").attr("disabled","disabled");
+				} else if (res.code == 6) {
+					$("#addProtectemail").removeAttr("disabled");
+					$("#addProtectemail").removeAttr("style");
+					$("#addBtn").removeAttr("disabled");
+					$("#addBtn").removeAttr("style");
+				} else {
+					$("#addProtectmtelMsg").html("");
+				}
+				if (res.code == 7) {
+					$("#addProtectemailMsg").html("*" + res.msg);
+					$("#addBtn").css("background-color","#aaa");
+					$("#addBtn").attr("disabled","disabled");
+				} else if (res.code == 7) {
+					$("#addBtn").removeAttr("disabled");
+					$("#addBtn").removeAttr("style");
+				} else {
+					$("#addProtectemailMsg").html("");
+				}
+			}, "json");
+			return false;
+		}
+		
+		/**
+		 * 验证修改时是否重复的失去焦点事件
+		 */
+		function editRepeat() {
+			$("#editLastlogintime").val("");
+			var addUrl = globalData.server + "/users/edit";	//请求地址
+			var strData = $("#editForm").serialize() + "&token=" + globalData.getToken();	//请求参数
+			//发异步，把数据提交给java
+			$.post(addUrl, strData, function(res){
+				if (res.code == 5) {
+					$("#editIdcardeMsg").html("*" + res.msg);
+					$("#editBtn").css("background-color","#aaa");
+					$("#editBtn").attr("disabled","disabled");
+				} else {
+					$("#editIdcardeMsg").html("");
+					$("#editBtn").removeAttr("disabled");
+					$("#editBtn").removeAttr("style");
+				}
+				if (res.code == 6) {
+					$("#editProtectmtelMsg").html("*" + res.msg);
+					$("#editBtn").css("background-color","#aaa");
+					$("#editBtn").attr("disabled","disabled");
+				} else if (res.code == 6) {
+					$("#editBtn").removeAttr("disabled");
+					$("#editBtn").removeAttr("style");
+				} else {
+					$("#editProtectmtelMsg").html("");
+				}
+				if (res.code == 7) {
+					$("#editProtectemailMsg").html("*" + res.msg);
+					$("#editBtn").css("background-color","#aaa");
+					$("#editBtn").attr("disabled","disabled");
+				} else if (res.code == 7) {
+					$("#editBtn").removeAttr("disabled");
+					$("#editBtn").removeAttr("style");
+				} else {
+					$("#editProtectemailMsg").html("");
+				}
+			}, "json");
+			return false;
+		}
+		
+	</script>
+</html>

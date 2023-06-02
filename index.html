@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>欢迎使用学生系统</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+		<link rel="stylesheet" type="text/css" href="css/x-admin.css" />
+		<script src="js/global.js"></script>
+	</head>
+
+	<body onload="getMenu()">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header header header-demo">
+				<div class="layui-main">
+					<div class="admin-logo-box">
+						<a class="logo" href="#" title="logo">学生管理系统</a>
+						<div class="larry-side-menu" id="daohanganniu" style="display: none;">
+							<i class="layui-icon" style="font-size: 30px;">&#xe67f;</i>
+						</div>
+					</div>
+					<ul class="layui-nav" lay-filter="">
+						<li class="layui-nav-item" style="margin-right: 40px;">
+							<span id="daKa" style="display: none; cursor: pointer;">状态未重置</span>
+						</li>
+						<li class="layui-nav-item"><img src="images/logins.png" class="layui-circle" style="border: 2px solid #A9B7B7;" width="35px" alt=""></li>
+						<li class="layui-nav-item">
+							<a href="javascript:;"><span id="showName"></span></a>
+							<dl class="layui-nav-child">
+								<!-- 二级菜单 -->
+								<dd>
+									<a href="">个人信息</a>
+								</dd>
+								<dd>
+									<a href="">切换帐号</a>
+								</dd>
+								<dd>
+									<a id="xgmm" style="cursor: pointer;">修改密码</a>
+								</dd>
+								<dd>
+									<a href="javascript:exitSystem()">退出</a>
+								</dd>
+							</dl>
+						</li>
+						
+					</ul>
+				</div>
+			</div>
+			<div class="layui-side layui-bg-black x-side" style="left:-200px;">
+				<div class="layui-side-scroll">
+					<ul class="layui-nav layui-nav-tree site-demo-nav" id="nav_ul" lay-filter="side">
+						<!--动态生成左侧导航树-->
+					</ul>
+				</div>
+			</div>
+			<div class="layui-tab layui-tab-card site-demo-title x-main" lay-filter="x-tab" lay-allowclose="true" style="left: 0px;border-left: solid 2px #2299ee;">
+				<ul class="layui-tab-title">
+					<li class="layui-this welcome"> 我的桌面 <i class="layui-icon layui-unselect layui-tab-close">ဆ</i> </li>
+				</ul>
+				<div class="layui-tab-content site-demo site-demo-body">
+					<div class="layui-tab-item layui-show">
+						<iframe frameborder="0" src="welcome.html" class="x-iframe"></iframe>
+					</div>
+				</div>
+			</div>
+			<div class="site-mobile-shade"></div>
+		</div>
+
+		<!--修改弹出区-->
+		<div class="x-body layui-anim layui-anim-up" id="editDiv" style="display: none; margin-top: 50px;">
+			<div id="" style="margin-left: 30px;">
+				<form class="layui-form" id="editForm" lay-filter="editForm">
+					<div class="layui-form-item">
+						<label for="L_email" class="layui-form-label">
+		  	            	<span class="x-red">*</span>原密码：
+		  	            </label>
+						<div class="layui-input-inline">
+							<input type="password" id="password" name="password" required lay-verify="required" autocomplete="off" placeholder="请输入原密码" class="layui-input">
+						</div>
+						<div class="layui-form-mid" id="regYmm" style="color: red;"></div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>新密码：
+		  	            </label>
+						<div class="layui-input-inline">
+							<input type="password" name="newPwd" id="newPwd" required lay-verify="required" autocomplete="off" placeholder="新密码" class="layui-input">
+						</div>
+						<div class="layui-form-mid" id="regXmm" style="color: red;"></div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_username" class="layui-form-label">
+		  	            	<span class="x-red">*</span>确认密码：
+		  	            </label>
+						<div class="layui-input-inline">
+							<input type="password" name="insPwd" id="insPwd" onblur="" required lay-verify="required" autocomplete="off" placeholder="再次确认新密码" class="layui-input">
+						</div>
+						<div class="layui-form-mid" id="regQrmm" style="color: red;"></div>
+					</div>
+					<div class="layui-form-item">
+						<label for="L_repass" class="layui-form-label"> </label>
+						<input type="button" lay-submit id="editBtn" lay-filter="editBtn" class="layui-btn" value="提交">
+					</div>
+					<input type="text" name="uid" id="editPwd" class="layui-input" style="display: none;">
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var element;
+		var layer;
+		//获取登录名
+		layui.use(['layer', 'element', 'form'], function() {
+			var $ = layui.jquery;
+			element = layui.element;
+			layer = layui.layer;
+			var form = layui.form;
+			$("#showName").html(globalData.getUserName());	//存入用户名
+			$("#editPwd").val(globalData.getUid()); //存入用户id
+
+			//修改密码的弹窗
+			$("#xgmm").on("click", function() {
+				layer.open({	//弹框
+					type: 1,	//1代表弹出的是DOM元素
+					title: "修改密码",		//标题
+					anim: 1,	//动画
+					offset: '100px',	//偏移
+					area: ['550px', '500px'],	//区域（弹框大小）
+					content: $('#editDiv')	//绑定弹出的元素
+				});
+			});
+			
+			/**
+			 * 查询原密码是否正确 
+			 * blur：输入框失去焦点事件
+			 */
+			$("#password").blur(function() {
+				if ($("#password").val() == "") {	//如果原密码为空 
+					$("#regYmm").html("*原密码为必填项");
+					return false;	//结束方法
+				}
+				var addUrl = globalData.server + "/users/getAllPwd"; //请求地址
+				//$("#editForm").serialize()：表单序列化提交
+				var strData = $("#editForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+				//post异步请求
+				$.post(addUrl, strData, function(res) {
+					if(res.code == 0) {	//如果状态码为0说明原密码不正确
+						$("#regYmm").html("*" + res.msg);	//设置提示
+					} else {
+						$("#regYmm").html("");	//如果正确清空提示
+					}
+				}, "json");
+			});
+			
+			//新密码框失去焦点事件
+			$("#newPwd").blur(function() {
+				var newPwd = $("#newPwd").val();	//获取新密码框的value值
+				if(newPwd.length < 6) {	//判断密码长度是否小于6位
+					$("#regXmm").html("*密码长度不能小于6位");	//小于6位给出提示
+				} else {
+					$("#regXmm").html("");	//清空提示
+				}
+			});
+			
+			//确认密码框失去焦点事件
+			$("#insPwd").blur(function() {
+				var newPwd = $("#newPwd").val();	//获取新密码
+				var insPwd = $("#insPwd").val();	//获取确认密码
+				if(newPwd != insPwd) {	//如果不一致  给出密码不一致的提示
+					$("#regQrmm").html("*确认密码与新密码不一致！");
+				} else {
+					$("#regQrmm").html("");	//如果一致清空提示
+				}
+				if(newPwd.length < 6) {	//判断确认密码的长度  小于6位给出提示
+					$("#regXmm").html("*密码长度不能小于6位");
+				} else {	
+					$("#regXmm").html("");	//清空提示
+				}
+			});
+
+			//监听提交   修改
+			form.on('submit(editBtn)', function(data) {	//提交前layui进行过必填验证 要求每项必填
+				if ($("#regYmm").html() != "") {	//验证原密码
+					$("#regYmm").html("*请输入正确的原密码");
+					return false;
+				}
+				if ($("#regXmm").html() != "") {	//验证新密码
+					$("#regXmm").html("*密码长度不能小于6位");
+					return false;
+				}
+				if ($("#regQrmm").html() != "") {	//验证确认密码
+					$("#regQrmm").html("*确认密码与新密码不一致！");
+					return false;
+				}
+				var addUrl = globalData.server + "/users/editPwd"; //请求地址
+				//$("#editForm").serialize()：表单序列化提交
+				var strData = $("#editForm").serialize() + "&token=" + globalData.getToken(); //请求参数
+				//发异步，把数据提交给java
+				$.post(addUrl, strData, function(res) {
+					if(res.code > 0) {	//如果状态码大于0说明修改成功
+						layer.closeAll();	//关闭弹框
+						//给出成功的提示
+						layer.msg("密码修改成功，请重新登录，三秒后自动返回到登录页面", {icon: 6});
+						setTimeout(function() { //3秒后返回登录页面
+							globalData.loginOut();	//清空h5缓存
+							//跳转到登录
+							window.top.location.href = globalData.client + "login.html";
+						}, 3000);
+					} else {
+						layer.msg(res.msg);	//失败的提示
+					}
+				}, "json");
+			});
+
+			//导航的hover效果、二级菜单等功能，需要依赖element模块
+			// larry-side-menu向左折叠
+			if($(window).width() < 750) {
+				trun = 0;
+			} else {
+				trun = 1;
+			}
+			$('.larry-side-menu').click(function() {
+				if(trun) {
+					$('.x-side').animate({
+						left: '0px'
+					}, 200).siblings('.x-main').animate({
+						left: '200px'
+					}, 200);
+					trun = 0;
+				} else {
+					$('.x-side').animate({
+						left: '-200px'
+					}, 200).siblings('.x-main').animate({
+						left: '0px'
+					}, 200);
+					trun = 1;
+				}
+			});
+
+			//监听导航点击
+			element.on('nav(side)', function(elem) {
+				title = elem.find('cite').text();
+				if(title == "") return;
+				url = elem.attr('_href');
+				if(url == undefined || url == null || url == "") return;
+				for(var i = 0; i < $('.x-iframe').length; i++) {
+					if($('.x-iframe').eq(i).attr('src') == url) {
+						element.tabChange('x-tab', url);
+						return;
+					}
+				};
+				res = element.tabAdd('x-tab', {
+					title: title, //用于演示
+					content: '<iframe frameborder="0" src="' + url + '" class="x-iframe"></iframe>',
+					id: url
+				});
+				element.tabChange('x-tab', url);
+				$('.layui-tab-title li').eq(0).find('i').remove();
+			});
+		});
+
+		//退出登录
+		function exitSystem() {
+			globalData.loginOut();
+			window.top.location.href = globalData.client + "login.html";
+		}
+
+		//获取功能
+		function getMenu() {
+			var getUrl = globalData.server + "/modules/getModulesByUid";
+			$.post(getUrl, {
+				"uid": globalData.getUid(),
+				"token": globalData.getToken()
+			}, function(res) {
+				$("#nav_ul").html("");
+				$.each(res, function(index, item) {
+					var s = "<li class='layui-nav-item'>";
+					s += "<a class='javascript:;' href='javascript:;'> ";
+					s += "<i class='layui-icon "+item.styleicon+"' style='top: 3px;'></i><cite>" + item.title + "</cite>";
+					s += "</a>";
+					s += "<dl class='layui-nav-child'>";
+					for(var i = 0; i < item.children.length; i++) {
+						var temp = item.children[i];
+						s += "<dd class=''>";
+						s += "<a href='javascript:;' _href='" + temp.mpath + "'>";
+						s += "<cite>" + temp.title + "</cite>";
+						s += "</a>";
+						s += "</dd>";
+					}
+					s += "</dl>";
+					s += "</li>";
+					$("#nav_ul").append(s);
+				});
+				element.render('nav', 'side');
+			}, "json");
+			$("#daohanganniu").click(); //点击导航按钮
+
+			/**
+			 * 页面加载后提示打卡
+			 */
+			var getUrl = globalData.server + "/users/findByUid";
+			$.post(getUrl, {	//查询打卡状态
+				"uid": globalData.getUid(),
+				"token": globalData.getToken()
+			}, function(res) {
+				if(res.issign == "否") {	//如果没有打卡
+					$("#daKa").attr("style", "display: inline; cursor: pointer;");	//检测到未打卡，让打卡按钮显示
+					$("#daKa").html("打卡");
+					var checkUrl = globalData.server + "/userscheck/userCheck";
+					$.post(checkUrl, {	//想打卡记录表添加记录
+						"uid": globalData.getUid(),
+						"username": globalData.getUserName(),
+						"idcard": globalData.getIdcard(),
+						"token": globalData.getToken()
+					}, function(res) {}, "json");
+					//提示用户打卡
+					layer.confirm(globalData.getUserName() + "用户，检测到您还未打卡，是否立即打卡？", {icon:6}, function() {
+						var zddkkUrl = globalData.server + "/users/userCheck";
+						$.post(zddkkUrl, {	//打卡请求
+							"uid": globalData.getUid(),
+							"username": globalData.getUserName(),
+							"token": globalData.getToken()
+						}, function(res) {
+							if(res == true) {
+								layer.msg(globalData.getUserName() + "打卡成功！", {icon: 1});
+								$("#daKa").html("签退");
+							}
+						}, "json");
+					});
+				} else {
+					$("#daKa").attr("style", "display: inline; cursor: pointer;");	//让打卡按钮显示
+					var checkQt = globalData.server + "/userscheck/checkSignOut";
+					$.post(checkQt, {	//检查是否签退了
+						"uid": globalData.getUid(),
+						"username": globalData.getUserName(),
+						"token": globalData.getToken()
+					}, function(res) {
+						if(res == 1) {	//说明已打卡了，但没签退，让按钮显示签退
+							$("#daKa").html("签退"); 
+						} else if(res == 2) {	//说明已经打卡过，并且也已经签退了
+							$("#daKa").html("已签退"); 
+						}
+					}, "json");
+				}
+			}, "json");
+			
+		//获取功能树的结束
+		}
+		
+		/**
+		 * 启用手动打卡||签退
+		 */
+		$("#daKa").on("click", function() {
+			if ($("#daKa").html() == "打卡") {	//说明是打卡操作
+				var checkUrl = globalData.server + "/users/userCheck";
+				$.post(checkUrl, {	//手动打卡的请求
+					"uid": globalData.getUid(),
+					"username": globalData.getUserName(),
+					"token": globalData.getToken()
+				}, function(res) {
+					if(res == true) {
+						layer.msg(globalData.getUserName() + "打卡成功！", {icon: 1});
+						$("#daKa").html("签退");
+					}
+				}, "json");
+			}
+			if ($("#daKa").html() == "签退") {	//说明是签退操作
+				layer.confirm(globalData.getUserName() + "用户，确认要签退吗？", {icon:6}, function() {
+					var checkUrl = globalData.server + "/userscheck/signOut";
+					$.post(checkUrl, {
+						"uid": globalData.getUid(),
+						"username": globalData.getUserName(),
+						"token": globalData.getToken()
+					}, function(res) {
+						if(res.code == 1) {
+							layer.msg(globalData.getUserName() + "签退成功！", {icon: 1});
+							$("#daKa").html("已签退");
+						} else {
+							layer.msg(res.msg, {icon: 5});
+						}
+					}, "json");
+				});
+			}
+			if ($("#daKa").html() == "已签退") {	//说明已经签退过了
+				layer.msg("您已经打过卡并且签退过了", {icon : 2});
+			}
+		});
+		
+
+	</script>
+
+</html>

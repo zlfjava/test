@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="Author" contect="http://www.webqin.net">
+		<title>密码重置成功</title>
+		<link rel="shortcut icon" href="images/favicon.ico" />
+		<link type="text/css" href="../css/css.css" rel="stylesheet" />
+		<script src="../js/global.js"></script>
+		<style type="text/css">
+			body {
+				width: 100%;
+				height: 100%;
+				background-image: url(../img/timg.jpg);
+				background-repeat: no-repeat;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="content">
+			<div class="for-liucheng">
+				<div class="liulist for-cur"></div>
+				<div class="liulist for-cur"></div>
+				<div class="liulist for-cur"></div>
+				<div class="liulist for-cur"></div>
+				<div class="liutextbox">
+					<div class="liutext for-cur"><em>1</em><br /><strong>填写账户名</strong></div>
+					<div class="liutext for-cur"><em>2</em><br /><strong>验证身份</strong></div>
+					<div class="liutext for-cur"><em>3</em><br /><strong>设置新密码</strong></div>
+					<div class="liutext for-cur"><em>4</em><br /><strong>完成</strong></div>
+				</div>
+			</div>
+			<div class="successs" style="color: green;">
+				<h3 id="showSuccesss">恭喜您，修改成功！3秒后自动返回登录页面</h3>
+			</div>
+		</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		layui.use(['layer', 'form'], function() {
+			var layer = layui.layer;
+			var form = layui.form;
+			var $ = layui.$;
+			var timeClock;	//倒计时计时器
+			var timer_num = 3;	//4秒
+			timeClock=setInterval(function(){	//每秒执行一次
+		        timer_num--;	//每次减一秒	
+		        $('#showSuccesss').html("恭喜您，修改成功！" + timer_num + "秒后自动返回登录页面");
+		        if (timer_num == 0) {	//如果三秒过完了
+		            clearInterval(timeClock);	//清除计时	器
+		            globalData.loginOut();	//清空h5缓存
+		            //跳转到登录页面
+		            location.href = globalData.client + "login.html";
+		        } 
+		    },1000);
+		});
+	</script>
+</html>

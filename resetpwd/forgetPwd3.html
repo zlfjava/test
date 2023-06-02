@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="Author" contect="http://www.webqin.net">
+		<title>设置新密码</title>
+		<link rel="shortcut icon" href="images/favicon.ico" />
+		<link type="text/css" href="../css/css.css" rel="stylesheet" />
+		<script src="../js/global.js"></script>
+		<style type="text/css">
+			body {
+				width: 100%;
+				height: 100%;
+				background-image: url(../img/timg.jpg);
+				background-repeat: no-repeat;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="content">
+			<div class="web-width">
+				<div class="for-liucheng">
+					<div class="liulist for-cur"></div>
+					<div class="liulist for-cur"></div>
+					<div class="liulist for-cur"></div>
+					<div class="liulist"></div>
+					<div class="liutextbox">
+						<div class="liutext for-cur"><em>1</em><br /><strong>填写账户名</strong></div>
+						<div class="liutext for-cur"><em>2</em><br /><strong>验证身份</strong></div>
+						<div class="liutext for-cur"><em>3</em><br /><strong>设置新密码</strong></div>
+						<div class="liutext"><em>4</em><br /><strong>完成</strong></div>
+					</div>
+				</div>
+				<form class="forget-pwd">
+					<dl>
+						<dt>新密码：</dt>
+						<dd>
+							<input type="password" id="newPwd" name="newPwd" />
+							<span id="showNewPwd" class="loginNameRed"></span>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<dl>
+						<dt>确认密码：</dt>
+						<dd>
+							<input type="password" id="insPwd" name="insPwd" />
+							<span id="showInsPwd" class="loginNameRed"></span>
+						</dd>
+						<div class="clears"></div>
+					</dl>
+					<div class="subtijiao"><input type="button" lay-submit id="editBtn" lay-filter="editBtn" value="提交" /></div>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		layui.use(['layer', 'form'], function() {
+			var layer = layui.layer;
+			var form = layui.form;
+			var $ = layui.$;
+			
+			//失去焦点验证密码长度
+			$("#newPwd").blur(function() {
+				var newPwd = $("#newPwd").val();	//根据id获取输入框的value值
+				if(newPwd.length < 6) {	//判断密码长度
+					$("#showNewPwd").html("*密码长度不能小于6位");	
+				} else {
+					$("#showNewPwd").html("");
+				}
+			});
+
+			//失去焦点验证密码是否一致
+			$("#insPwd").blur(function() {
+				var newPwd = $("#newPwd").val();	//根据id获取新密码输入框的value值
+				var insPwd = $("#insPwd").val();	//根据id获取确认面输入框的value值
+				if(newPwd != insPwd) {	//判断是否相等  
+					//如果不相等给出提示
+					$("#showInsPwd").html("*确认密码与新密码不一致！");
+				} else {
+					//相等清空提示
+					$("#showInsPwd").html("");
+				}
+			});
+
+			//提交
+			$("#editBtn").click(function() {
+				var password = $("#newPwd").val();	//根据id获取新密码输入框的value值
+				var insPwd = $("#insPwd").val();	//根据id获取确认面输入框的value值
+				if (password == "" || password == null) {	//验证面是否为空
+					$("#showNewPwd").html("*密码必填");
+					return false;
+				}
+				if (insPwd == "" || insPwd == null) {	//验证确认密码是否为空
+					$("#showInsPwd").html("*确认密码必填");
+					return false;	
+				}
+				if ($("#showNewPwd").html() != "") {	//验证密码长度
+					layer.msg("请输入符合规范的密码", {icon : 5});
+					return false;
+				}
+				if ($("#showInsPwd").html() != "") {	//验证确认密码与密码是否一致
+					$("#showInsPwd").html("*确认密码与新密码不一致！");
+					return false;
+				}
+				var addUrl = globalData.server + "/users/setPwd"; //请求地址
+				//发异步，把数据提交给java
+				$.post(addUrl, {
+					//密码参数
+					"password": password
+				}, function(res) {
+					if(res.code > 0) {	//如果返回的code状态码大于0 说明修改成功
+						//跳转页面
+						location.href = "forgetPwd4.html";
+					} else {
+						//失败的提示消息
+						layer.msg(res.msg, {icon : 5});
+					}
+				}, "json");
+			})
+		});
+	</script>
+</html>

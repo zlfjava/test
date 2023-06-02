@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../../js/global.js"></script>
+	</head>
+	<body>
+		<div class="x-nav">
+			<span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">系统管理</a>
+		        <a><cite>打卡管理</cite></a>
+	        </span>
+			<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:38px">&#xe669;</i>
+			</a>
+		</div>
+		<!-- 条件查询区 -->
+		<div class="layui-form-item" style="margin-left: 10px;">
+			<form class="layui-form">
+				<label class="layui-form-mid">用户名</label>
+				<div class="layui-input-inline" style="width: 120px;">
+					<input type="text" id="checkUsername" placeholder="请输入关键字" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">打卡时间</label>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="checkSignintime" placeholder="开始时间" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid">-</div>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="checkUcid" placeholder="结束时间" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-mid">是否打卡</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<select id="checkSignstatus">
+						<option value="">--请选择--</option>
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+				<label class="layui-form-mid">是否签退</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<select id="checkSignout">
+						<option value="">--请选择--</option>
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</div>
+				<label class="layui-form-mid">签退时间</label>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="checkSignouttime" placeholder="开始时间" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid">-</div>
+				<div class="layui-input-inline" style="width: 150px;">
+					<input type="text" id="checkIstime" placeholder="结束时间" autocomplete="off" class="layui-input">
+				</div>
+				<button class="layui-btn" type="button" id="searsh">
+			        <i class="layui-icon">&#xe615;</i>检索
+			    </button>
+			</form>
+		</div>
+		<div>
+		    <button class="layui-btn layui-btn-sm" id="exportLieBiao" style=" margin-left: 20px;"> 
+		    	<i class="layui-icon">&#xe61f;</i>添加到导出列表
+		    </button>
+		    <button class="layui-btn layui-btn-sm" id="exportFile">
+		    	<i class="layui-icon">&#xe67d;</i>导出Excel文件
+		    </button>
+	  	</div>
+		<!--数据表格-->
+		<table id="demo" lay-filter="test"></table>
+	</body>
+	<script>
+		layui.use(['table', 'form', 'layer', 'laydate', 'element', 'upload'], function() {
+			var table = layui.table;
+			var form = layui.form;
+			var layer = layui.layer;
+			var laydate = layui.laydate;
+			var upload = layui.upload;
+			var $ = layui.$;
+
+			//执行一个laydate实例
+			laydate.render({
+				elem: '#checkSignintime', //指定元素
+				type: 'datetime'
+			});
+			laydate.render({
+				elem: '#checkUcid', //指定元素
+				type: 'datetime'
+			});
+			laydate.render({
+				elem: '#checkSignouttime', //指定元素
+				type: 'datetime'
+			});
+			laydate.render({
+				elem: '#checkIstime', //指定元素
+				type: 'datetime'
+			});
+
+			//渲染数据表格
+			table.render({
+				elem: '#demo',
+				url: globalData.server + "/userscheck/getAll",
+				page: true,
+				limit: '10',
+				where: {
+					'token': globalData.getToken()
+				}, //验证
+				cols: [
+					[{
+							type: 'checkbox'
+						},
+						{
+							type: 'numbers',
+							title: '序号',
+							align: 'center'
+						},
+						{
+							field: 'username',
+							title: '用户名',
+							align: 'center'
+						},
+						{
+							field: 'uphone',
+							title: '手机号',
+							align: 'center',
+							//自定义模板，截取手机号前三位和后四位 中间显示*
+							templet:function(d){
+								return d.uphone.substring(0,3)+"****"+d.uphone.substring(7,d.uphone.length);
+							}
+						},
+						{
+							field: 'signstatus',
+							title: '是否打卡',
+							align: 'center'
+						},
+						{
+							field: 'signintime',
+							title: '打卡时间',
+							align: 'center'
+						},
+						{
+							field: 'signout',
+							title: '是否签退',
+							align: 'center'
+						},
+						{
+							field: 'signouttime',
+							title: '签退时间',
+							align: 'center'
+						}
+					]
+				],
+				id: "reloadId"
+			});
+			
+			var ids = [];	//创建数组 存储sid参数
+			var repeatUsername = [];	//存储重复数据
+	        $("#exportLieBiao").on("click", function(){	//添加至导出列表
+	        	var check = table.checkStatus("reloadId");	//获取数据表格
+				var data = check.data;	//获取数据表格里的数据
+				repeatUsername = [];
+				for (var i = 0; i < data.length; i++) {
+					for (j = 0; j < ids.length; j++) {
+						if (data[i].ucid == ids[j]) {
+							repeatUsername.push(data[i].username);
+						}
+					}
+				}
+				if (repeatUsername.length > 0) {
+					layer.alert("所选包含重复数据:" + repeatUsername, {icon : 3});
+					return false;
+				}
+				//遍历数据
+				for (var i = 0; i < data.length; i++) {
+					ids.push(data[i].ucid);	//取出sid并添加到数组中
+				}
+				if (data.length < 1) {
+					layer.msg("您还没有选择数据", {icon : 5});
+					return false;	
+				}
+				layer.msg("当前" + data.length + "条数据已添加至列表", {icon : 1});
+	        });
+        
+	        //文件导出
+	        $("#exportFile").on('click',function(){
+				if (ids == null || ids == "") {	//判断是否勾选了数据	如果没有勾选  默认是导出所有
+	        		table.reload("reloadId", {where: {"page": 1,"limit": 100000}});
+					layer.confirm("确认要导出全部数据吗？", {icon : 6}, function(){	//导出全部数据提示
+						var kmnh = layui.table.cache["reloadId"];	//获取表格的全部数据
+						for (var i = 0; i < kmnh.length; i++) {	//循环遍历
+							ids.push(kmnh[i].ucid);		//添加到数组
+						}
+						var idJoin = ids.join(",");	//使用逗号分隔参数
+						//请求地址
+						window.location.href = globalData.server + "/userscheck/exportUserscheck?&token=" + globalData.getToken() + "&ids=" + idJoin;
+						layer.msg("文件已下载", {icon : 1});
+						ids = [];	//导出成功后 清空id数组 方便下次存储数据
+						table.reload("reloadId", {where: {"page": 1,"limit": 10}});
+					}, function(){
+						layer.msg("已取消", {icon : 6});
+						table.reload("reloadId", {where: {"page": 1,"limit": 10}});
+					});
+				} else {
+					layer.confirm("共选择了【"+ ids.length +"】条数据，确认导出吗？", {icon : 6}, function(){
+						var idJoin = ids.join(",");	//使用逗号分隔参数
+						//请求地址
+						window.location.href = globalData.server + "/userscheck/exportUserscheck?&token=" + globalData.getToken() + "&ids=" + idJoin;
+						layer.msg("文件已下载", {icon : 1});
+						ids = [];	//导出成功后 清空id数组 方便下次存储数据
+						repeatSname = [];	//导出成功后 清空重复数据 方便下下次提示
+					});
+				}
+			});
+
+			//点击检索按钮时触发
+			$("#searsh").on("click", function() {
+				active.reload();
+				return false;
+			});
+
+			/**
+			 * 重载数据表格的方法
+			 * 参数 checkUsername checkSignintime checkUcid checkSignstatus checkSignout checkSignouttime checkIstime
+			 */
+			active = {
+				reload: function() {
+					table.reload("reloadId", {
+						where: {
+							"username": $("#checkUsername").val(),
+							"signintime": $("#checkSignintime").val(),
+							"ucid": $("#checkUcid").val(),
+							"signstatus": $("#checkSignstatus").val(),
+							"signout": $("#checkSignout").val(),
+							"signouttime": $("#checkSignouttime").val(),
+							"istime": $("#checkIstime").val(),
+							"token": globalData.getToken()
+						},
+						page: {
+							curr: 1
+						}
+					});
+				}
+			}
+			
+			
+		});
+	</script>
+
+</html>

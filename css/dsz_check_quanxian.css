@@ -1,0 +1,46 @@
+.check_div {
+	display: none;
+}
+.check_div_toolbar {
+	display: none;
+}
+
+.check_deletelist {
+	display: none;
+}
+.check_add {
+	display: none;
+}
+
+.check_setRoles {
+	display: none;
+}
+.check_resetPwd {
+	display: none;
+}
+.check_edit {
+	display: none;
+}
+.check_delete {
+	display: none;
+}
+.check_setFwQx {
+	display: none;
+}
+.check_gongNeng {
+	display: none;
+}
+.check_detail {
+	display: none;
+}
+/*咨询师条件查询框*/
+.check_label {
+	display: none;
+}
+.check_div_inline {
+	display: none;
+}
+/*隐藏tab选项卡*/
+#check_tab_li {
+	display: none;
+}
