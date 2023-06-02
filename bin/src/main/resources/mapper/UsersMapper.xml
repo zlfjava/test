@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsz.mapper.UsersMapper">
+	
+	<!-- List<Users> getAll(FenyeUtil<Users> fy);	获取所有用户 -->
+	<select id="getAll" resultMap="userMap">
+		select * from t_users
+		<where>
+			<if test="t.loginname != '' and t.loginname != null">loginname like "%" #{t.loginname} "%"</if>
+			<if test="t.lastlogintime != '' and t.lastlogintime != null">and lastlogintime &gt; #{t.lastlogintime}</if>
+			<if test="t.locktime != '' and t.locktime != null">and lastlogintime &lt; #{t.locktime}</if>
+			<if test="t.islockout != '' and t.islockout != null">and islockout = #{t.islockout}</if>
+		</where>
+		<if test="t.protectmtel == '创建时间'">order by createtime desc</if>
+		<if test="t.protectmtel == '最后登录时间'">order by lastlogintime desc</if>
+		limit #{page}, #{limit}
+	</select>
+	
+	<!-- Integer getCount(FenyeUtil<Users> fy);	获取所有用户条数 -->
+	<select id="getCount" resultType="int">
+		select count(*) from t_users
+		<where>
+			<if test="t.loginname != '' and t.loginname != null">loginname like "%" #{t.loginname} "%"</if>
+			<if test="t.lastlogintime != '' and t.lastlogintime != null">and lastlogintime &gt; #{t.lastlogintime}</if>
+			<if test="t.locktime != '' and t.locktime != null">and lastlogintime &lt; #{t.locktime}</if>
+			<if test="t.islockout != '' and t.islockout != null">and islockout = #{t.islockout}</if>
+		</where>
+		<if test="t.protectmtel == '创建时间'">order by createtime desc</if>
+		<if test="t.protectmtel == '最后登录时间'">order by lastlogintime desc</if>
+	</select>
+	
+	<!-- Users findByUid(String uid);	根据用户id查询 -->
+	<select id="findByUid" resultMap="userMap">
+		select * from t_users where uid = #{uid}
+	</select>
+	
+	<!-- Users findByLoginname(String idcard, String password);	根据用户名查询是否有该用户 登录-->
+	<select id="findByLoginname" resultType="users">
+		select * from t_users
+		<where>
+			<if test="idcard != '' and idcard != null">
+				idcard = #{idcard}
+			</if>
+			<if test="password != '' and password != null">
+				and password = #{password}
+			</if>
+		</where>
+	</select>
+
+	<!-- Integer addUsers(Users user); 新增员工（用户） -->
+	<insert id="addUsers" parameterType="users">
+		insert into t_users(
+			uid,loginname,password,islockout,createtime,psdwrongtime,protectemail,protectmtel,idcard,issign
+		) values (
+			#{uid},#{loginname},#{password},#{islockout},#{createtime},#{psdwrongtime},#{protectemail},#{protectmtel},
+			#{idcard},#{issign}
+		)
+	</insert>
+	
+	<!-- Integer updateUsers(Users user);	修改用户信息 -->
+	<update id="updateUsers" parameterType="users">
+		update t_users
+		<set>
+			<if test="loginname != '' and loginname != null">loginname = #{loginname}</if>
+			<if test="password != '' and password != null">,password = #{password}</if>
+			<if test="islockout != '' and islockout != null">,islockout = #{islockout}</if>
+			<if test="lastlogintime != '' and lastlogintime != null">,lastlogintime = #{lastlogintime}</if>
+			<if test="psdwrongtime != null">,psdwrongtime = #{psdwrongtime}</if>
+			<if test="locktime != null">,locktime = #{locktime}</if>
+			<if test="protectemail != '' and protectemail != null">,protectemail = #{protectemail}</if>
+			<if test="protectmtel != '' and protectmtel != null">,protectmtel = #{protectmtel}</if>
+			<if test="idcard != '' and idcard != null">,idcard = #{idcard}</if>
+			<if test="issign != '' and issign != null">,issign = #{issign}</if>
+			<if test="uweight != null">,uweight = #{uweight}</if>
+		</set>
+		<where>
+			<if test="uid != '' and uid != null">
+				uid = #{uid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- Integer delUser(List<String> uid);	批量删除用户 -->
+	<delete id="delUser">
+		delete from t_users where uid in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- Integer addRoles(String uid, Integer rid);	给用户添加角色 -->
+	<insert id="addRoles">
+		insert into t_user_roles(uid, rid) values (#{uid}, #{rid})
+	</insert>
+	
+	<!-- Integer delRoles(String uid, Integer rid);	移除用户的角色 -->
+	<delete id="delRoles">
+		delete from t_user_roles where uid = #{uid} and rid = #{rid}
+	</delete>
+	
+	<!-- Users findByPassword(String uid, String password); 查询密码是否正确-->
+	<select id="findByPassword" resultMap="userMap">
+		select * from t_users where uid = #{uid} and password = #{password}
+	</select>
+	
+	<!-- Users checkRepeat(Users user);	判断是否有重复数据 -->
+	<select id="checkRepeat" resultMap="userMap">
+		select * from t_users 
+		<where>
+			<if test="uid != '' and uid != null">
+				uid &lt;&gt; #{uid}
+			</if>
+			<if test="protectemail != '' and protectemail != null">
+				and protectemail = #{protectemail}
+			</if>
+			<if test="idcard != '' and idcard != null">
+				and idcard = #{idcard}
+			</if>
+			<if test="protectmtel != '' and protectmtel != null">
+				and protectmtel = #{protectmtel}
+			</if>
+		</where>
+	</select>
+	
+	<!-- Users Protectmtel(String protectmtel); 根据手机号查询 -->
+	<select id="Protectmtel" resultMap="userMap">
+		select * from t_users where protectmtel = #{protectmtel}
+	</select>
+	
+	<!-- List<Users> getAllZxsname(); 查询所有拥有咨询师角色的用户 -->
+	<select id="getAllZxsname" resultMap="userMap">
+		select loginname,protectmtel from t_users where uid in (
+			select uid from t_user_roles where rid in (
+				select rid from t_roles where rname = "咨询师"
+			)
+		)
+	</select>
+
+	<!-- Users getUphoneName(String phone);根据手机号查找姓名 -->
+	<select id="getUphoneName" resultMap="userMap">
+		select * from t_users where protectmtel = #{phone}
+	</select>
+	
+	<!-- 结果集映射 -->
+	<resultMap type="users" id="userMap">
+		<id property="uid" column="uid"/>
+		<result property="loginname" column="loginname"/>
+		<result property="password" column="password"/>
+		<result property="islockout" column="islockout"/>
+		<result property="lastlogintime" column="lastlogintime"/>
+		<result property="createtime" column="createtime"/>
+		<result property="psdwrongtime" column="psdwrongtime"/>
+		<result property="locktime" column="locktime"/>
+		<result property="protectemail" column="protectemail"/>
+		<result property="protectmtel" column="protectmtel"/>
+		<result property="idcard" column="idcard"/>
+		<result property="issign" column="issign"/>
+		<result property="uweight" column="uweight"/>
+	</resultMap>
+	
+</mapper>

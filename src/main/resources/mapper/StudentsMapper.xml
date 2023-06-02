@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsz.mapper.StudentsMapper">
+
+	<!-- List<Students> getAll(FenyeUtil<Students> fy); 查询所有学生 -->
+	<select id="getAll" resultMap="stuMap">
+		select * from t_students stu inner join t_users tu on stu.uid = tu.uid
+		<where>
+			<!-- 这个条件是用来判断是否是可用信息  如果是否  说明被软删除了 -->
+			<if test="t.ifvalid != null and t.ifvalid != null">ifvalid = #{t.ifvalid}</if>
+			<if test="t.sname != '' and t.sname != null">and sname like "%" #{t.sname} "%"</if>
+			<if test="t.sage != '' and t.sage != null">and sage &gt;= #{t.sage}</if>
+			<if test="t.paymentamount != '' and t.paymentamount != null">and sage &lt;= #{t.paymentamount}</if>
+			<if test="t.sphone != '' and t.sphone != null">and sphone like "%" #{t.sphone} "%"</if>
+			<if test="t.sqq != '' and t.sqq != null">and sqq like "%" #{t.sqq} "%"</if>
+			<if test="t.sgender != '' and t.sgender != null">and sgender = #{t.sgender}</if>
+			<if test="t.szxsid != '' and t.szxsid != null">and szxsid = #{t.szxsid}</if>
+			<if test="t.screatetime != '' and t.screatetime != null">and screatetime &gt;= #{t.screatetime}</if>
+			<if test="t.sourceword != '' and t.sourceword != null">and screatetime &lt; #{t.sourceword}</if>
+			<if test="t.paythefees != '' and t.paythefees != null">and paythefees = #{t.paythefees}</if>
+			<if test="t.isvisit != '' and t.isvisit != null">and isvisit = #{t.isvisit}</if>
+			<!-- 是否有效 -->
+			<if test="t.iseffect != '' and t.iseffect != null">and iseffect = #{t.iseffect}</if>
+			<if test="t.uid != '' and t.uid != null">and stu.uid = #{t.uid}</if>
+			<if test="t.uphone != '' and t.uphone != null">and stu.uphone = #{t.uphone}</if>
+			<!-- 查询已分配学生 -->
+			<if test="t.rremark != '' and t.rremark != null">and stu.szxsid != #{t.rremark}</if>
+		</where>
+		order by stu.screatetime desc limit #{page}, #{limit}
+	</select>
+
+	<!-- Integer getCount(FenyeUtil<Students> fy); 获取总条数 -->
+	<select id="getCount" resultType="int">
+		select count(*) from t_students stu inner join t_users tu on stu.uid = tu.uid
+		<where>
+			<if test="t.ifvalid != null and t.ifvalid != null">ifvalid = #{t.ifvalid}</if>
+			<if test="t.sname != '' and t.sname != null">and sname like "%" #{t.sname} "%"</if>
+			<if test="t.sage != '' and t.sage != null">and sage &gt;= #{t.sage}</if>
+			<if test="t.paymentamount != '' and t.paymentamount != null">and sage &lt;= #{t.paymentamount}</if>
+			<if test="t.sphone != '' and t.sphone != null">and sphone like "%" #{t.sphone} "%"</if>
+			<if test="t.sqq != '' and t.sqq != null">and sqq like "%" #{t.sqq} "%"</if>
+			<if test="t.sgender != '' and t.sgender != null">and sgender = #{t.sgender}</if>
+			<if test="t.szxsid != '' and t.szxsid != null">and szxsid = #{t.szxsid}</if>
+			<if test="t.screatetime != '' and t.screatetime != null">and screatetime &gt;= #{t.screatetime}</if>
+			<if test="t.sourceword != '' and t.sourceword != null">and screatetime &lt; #{t.sourceword}</if>
+			<if test="t.paythefees != '' and t.paythefees != null">and paythefees = #{t.paythefees}</if>
+			<if test="t.isvisit != '' and t.isvisit != null">and isvisit = #{t.isvisit}</if>
+			<!-- 是否有效 -->
+			<if test="t.iseffect != '' and t.iseffect != null">and iseffect = #{t.iseffect}</if>
+			<if test="t.uid != '' and t.uid != null">and stu.uid = #{t.uid}</if>
+			<if test="t.uphone != '' and t.uphone != null">and stu.uphone = #{t.uphone}</if>
+			<!-- 查询已分配学生 -->
+			<if test="t.rremark != '' and t.rremark != null">and stu.szxsid != #{t.rremark}</if>
+		</where>
+	</select>
+
+	<!-- List<Students> getUsername(String uid); 查询当前网络咨询师录入的学生所属咨询师咨询师 -->
+	<select id="getUsername" resultType="users">
+		select uid,loginname from t_users where loginname in (
+			select szxsid from t_students where uid = #{uid} group by szxsid 
+		)
+	</select>
+        
+	<!-- int addStu(Students student); 录入学生 -->
+	<insert id="addStu">
+		insert into t_students(sid,sname,uid,sage,sphone,sourcechannel,sgender,sourceword,seducation,sqq,sstatus,wechatid,sourceurl,screatetime,sremark,ifvalid)
+		values(#{sid},#{sname},#{uid},#{sage},#{sphone},#{sourcechannel},#{sgender},#{sourceword},#{seducation},#{sqq},#{sstatus},#{wechatid},#{sourceurl},#{screatetime},#{sremark},#{ifvalid})
+	</insert>
+	
+	<!-- 修改学生信息 int editStu(Students stu); -->
+	<update id="editStu" parameterType="students">
+		update t_students
+		<set>
+			<if test="szxsid != '' and szxsid != null">szxsid = #{szxsid}</if>
+			<if test="uphone != '' and uphone != null">,uphone = #{uphone}</if>
+			<if test="sname != '' and sname != null">,sname = #{sname}</if>
+			<if test="sphone != '' and sphone != null">,sphone = #{sphone}</if>
+			<if test="sage != null">,sage = #{sage}</if>
+			<if test="sgender != '' and sgender != null">,sgender = #{sgender}</if>
+			<if test="sourcechannel != '' and sourcechannel != null">,sourcechannel = #{sourcechannel}</if>
+			<if test="sourceword != '' and sourceword != null">,sourceword = #{sourceword}</if>
+			<if test="seducation != '' and seducation != null">,seducation = #{seducation}</if>
+			<if test="sqq != '' and sqq != null">,sqq = #{sqq}</if>
+			<if test="sstatus != '' and sstatus != null">,sstatus = #{sstatus}</if>
+			<if test="wechatid != '' and wechatid != null">,wechatid = #{wechatid}</if>
+			<if test="sourceurl != '' and sourceurl != null">,sourceurl = #{sourceurl}</if>
+			<if test="ifweight != '' and ifweight != null">,ifweight = #{ifweight}</if>
+			<if test="screatetime != '' and screatetime != null">,screatetime = #{screatetime}</if>
+			<if test="sremark != '' and sremark != null">,sremark = #{sremark}</if>
+			<if test="gradecase != '' and gradecase != null">,gradecase = #{gradecase}</if>
+			<if test="course != '' and course != null">,course = #{course}</if>
+			<if test="iseffect != '' and iseffect != null">,iseffect = #{iseffect}</if>
+			<if test="invalidcause != '' and invalidcause != null">,invalidcause = #{invalidcause}</if>
+			<if test="isfirstvisit != '' and isfirstvisit != null">,isfirstvisit = #{isfirstvisit}</if>
+			<if test="firstvisittime != '' and firstvisittime != null">,firstvisittime = #{firstvisittime}</if>
+			<if test="isvisit != '' and isvisit != null">,isvisit = #{isvisit}</if>
+			<if test="visittime != '' and visittime != null">,visittime = #{visittime}</if>
+			<if test="handselmoney != null">,handselmoney = #{handselmoney}</if>
+			<if test="handsetime != '' and handsetime != null">,handsetime = #{handsetime}</if>
+			<if test="paythefees != '' and paythefees != null">,paythefees = #{paythefees}</if>
+			<if test="paythefeestime != '' and paythefeestime != null">,paythefeestime = #{paythefeestime}</if>
+			<if test="paymentamount != '' and paymentamount != null">,paymentamount = #{paymentamount}</if>
+			<if test="isoutpay != '' and isoutpay != null">,isoutpay = #{isoutpay}</if>
+			<if test="isoutpaycause != '' and isoutpaycause != null">,isoutpaycause = #{isoutpaycause}</if>
+			<if test="isoutpaytime != '' and isoutpaytime != null">,isoutpaytime = #{isoutpaytime}</if>
+			<if test="intheclass != '' and intheclass != null">,intheclass = #{intheclass}</if>
+			<if test="intheclasstime != '' and intheclasstime != null">,intheclasstime = #{intheclasstime}</if>
+			<if test="intheclassremark != '' and intheclassremark != null">,intheclassremark = #{intheclassremark}</if>
+			<if test="rremark != '' and rremark != null">,rremark = #{rremark}</if>
+		</set>
+		<where>
+			<if test="sid != '' and sid != null">sid = #{sid}</if>
+		</where>
+	</update>
+	
+	<!-- 根据学生id查询 Students getOneStudents(String id); -->
+	<select id="getOneStudents" resultMap="stuMap">
+		select * from t_students stu inner join t_users tu on stu.uid = tu.uid where stu.sid = #{id}
+	</select>
+	
+	<!-- List<Students> getAllWfp(FenyeUtil<Students> fy); 获取所有未分配的学生 -->
+	<select id="getAllWfp" resultMap="stuMap">
+		select * from t_students
+		<where>
+			<if test="t.sname != '' and t.sname != null">sname like "%" #{t.sname} "%"</if>
+			<if test="t.sage != '' and t.sage != null">and sage = #{t.sage}</if>
+			<if test="t.sgender != '' and t.sgender != null">and sgender = #{t.sgender}</if>
+			and szxsid = "未分配"
+		</where>
+		limit #{page}, #{limit}
+	</select>
+	
+	<!-- Integer getCountWfp(FenyeUtil<Students> fy); 获取所有未分配的学生的总条数 -->
+	<select id="getCountWfp" resultType="int">
+		select count(*) from t_students
+		<where>
+			<if test="t.sname != '' and t.sname != null">sname like "%" #{t.sname} "%"</if>
+			<if test="t.sage != '' and t.sage != null">and sage = #{t.sage}</if>
+			<if test="t.sgender != '' and t.sgender != null">and sgender = #{t.sgender}</if>
+			and szxsid = "未分配"
+		</where>
+	</select>
+	
+	<!-- int editStuPl(String szxsid, String uphone, List<String> ids); 分配学生给某个咨询师 -->
+	<update id="editStuPl">
+		update t_students
+		<set>
+			<if test="szxsid != '' and szxsid != null">szxsid = #{szxsid}</if>
+			<if test="uphone != '' and uphone != null">,uphone = #{uphone}</if>
+		</set>
+		where sid in 
+		<foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!-- 删除学生信息 软删除 删除后进入回收站 也可以还原 Integer mildDel(List<String> sid, String ifvalid); -->
+	<update id="mildDel">
+		update t_students set ifvalid = #{ifvalid}  where sid in 
+		<foreach collection="sid" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!-- 删除学生信息  真删除  将会从数据库移除数据 不可还原 Integer perpetuaDel(List<String> sid); -->
+	<delete id="perpetuaDel">
+		delete from t_students where sid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- List<Students> getAllWfpSy(); 查询所有未分配的学生 -->
+	<select id="getAllWfpSy" resultMap="stuMap">
+		select * from t_students where szxsid = "未分配"
+	</select>
+	
+	<!-- Integer editStuTest(String szxsid, String uphone, String ids); 修改 -->
+	<update id="editStuTest">
+		update t_students
+		<set>
+			<if test="szxsid != '' and szxsid != null">szxsid = #{szxsid}</if>
+			<if test="uphone != '' and uphone != null">,uphone = #{uphone}</if>
+		</set>
+		where sid = #{ids}
+	</update>
+	
+	<!-- Integer getCountzxsNum(String uphone); 查询咨询师下有多少学生 -->
+	<select id="getCountzxsNum" resultType="int">
+		select count(*) from t_students where uphone = #{uphone}
+	</select>
+	
+	<!-- 获取学生信息与学生跟踪记录全部数据 List<Students> getAllFollowsByStuData(FenyeUtil<Students> fy); -->
+	<select id="getAllFollowsByStuData">
+		select * from t_students stu left join t_follows tf on stu.sid = tf.sid group by stu.sid
+	</select>
+	
+	<!-- 获取全部学生信息 List<Students> getAllStuName(String uphone); -->
+	<select id="getAllStuName" resultMap="stuMap">
+		select * from t_students
+		<where>
+			<if test="uphone != '' and uphone != null">
+				uphone = #{uphone}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 结果集映射 -->
+	<resultMap type="students" id="stuMap">
+		<id property="sid" column="sid" />
+		<result property="uid" column="uid" />
+		<result property="szxsid" column="szxsid" />
+		<result property="uphone" column="uphone" />
+		<result property="sname" column="sname" />
+		<result property="sphone" column="sphone" />
+		<result property="sage" column="sage" />
+		<result property="sgender" column="sgender" />
+		<result property="sourcechannel" column="sourcechannel" />
+		<result property="sourceword" column="sourceword" />
+		<result property="seducation" column="seducation" />
+		<result property="sqq" column="sqq" />
+		<result property="sstatus" column="sstatus" />
+		<result property="wechatid" column="wechatid" />
+		<result property="sourceurl" column="sourceurl" />
+		<result property="ifweight" column="ifweight" />
+		<result property="screatetime" column="screatetime" />
+		<result property="sremark" column="sremark" />
+		<result property="gradecase" column="gradecase" />
+		<result property="course" column="course" />
+		<result property="iseffect" column="iseffect" />
+		<result property="invalidcause" column="invalidcause" />
+		<result property="isfirstvisit" column="isfirstvisit" />
+		<result property="firstvisittime" column="firstvisittime" />
+		<result property="isvisit" column="isvisit" />
+		<result property="visittime" column="visittime" />
+		<result property="handselmoney" column="handselmoney" />
+		<result property="handsetime" column="handsetime" />
+		<result property="paythefees" column="paythefees" />
+		<result property="paythefeestime" column="paythefeestime" />
+		<result property="paymentamount" column="paymentamount" />
+		<result property="isoutpay" column="isoutpay" />
+		<result property="isoutpaycause" column="isoutpaycause" />
+		<result property="isoutpaytime" column="isoutpaytime" />
+		<result property="intheclass" column="intheclass" />
+		<result property="intheclasstime" column="intheclasstime" />
+		<result property="intheclassremark" column="intheclassremark" />
+		<result property="rremark" column="rremark" />
+		<!-- 单向多对一结果集映射配置 -->
+		<association property="user" javaType="users">
+			<id property="uid" column="uid" />
+			<result property="loginname" column="loginname" />
+			<result property="idcard" column="idcard" />
+		</association>
+	</resultMap>
+
+</mapper>

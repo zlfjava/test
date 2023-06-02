@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsz.mapper.FollowsMapper">
+	
+	<!-- 添加跟踪记录 int add(Follows foll); -->
+	<insert id="add" parameterType="follows">
+		insert into t_follows(fid,sid,uid,visittime,visitcase,trackingmode,nexttrackingtime,fremark,stustatus)
+		values(#{fid},#{sid},#{uid},#{visittime},#{visitcase},#{trackingmode},#{nexttrackingtime},#{fremark},#{stustatus})
+	</insert>
+	
+	<!-- 获取所有数据 List<Follows> getAll(FenyeUtil<Follows> fy); -->
+	<select id="getAll" resultMap="followsMap">
+		select * from t_follows tf inner join t_students ts on ts.sid = tf.sid
+		<where>
+			<if test="t.sid != '' and t.sid != null">
+				tf.sid = #{t.sid}
+			</if>
+			<if test="t.trackingmode != '' and t.trackingmode != null"> 
+				and tf.trackingmode like "%" #{t.trackingmode} "%"
+			</if>
+			<if test="t.visittime != '' and t.visittime != null">
+				and tf.visittime &gt;= #{t.visittime}
+			</if>
+			<if test="t.fremark != '' and t.fremark != null">
+				and tf.visittime &lt; #{t.fremark}
+			</if>
+		</where>
+		limit #{page}, #{limit}
+	</select>
+	
+	<!-- 获取数据总条数 Integer getCount(FenyeUtil<Follows> fy); -->
+	<select id="getCount" resultType="int">
+		select count(*) from t_follows tf inner join t_students ts on ts.sid = tf.sid
+		<where>
+			<if test="t.sid != '' and t.sid != null">
+				tf.sid = #{t.sid}
+			</if>
+			<if test="t.trackingmode != '' and t.trackingmode != null"> 
+				and tf.trackingmode like "%" #{t.trackingmode} "%"
+			</if>
+			<if test="t.visittime != '' and t.visittime != null">
+				and tf.visittime &gt;= #{t.visittime}
+			</if>
+			<if test="t.fremark != '' and t.fremark != null">
+				and tf.visittime &lt; #{t.fremark}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 修改跟踪记录 int edit(Follows foll); -->
+	<update id="edit">
+		update t_follows
+		<set>
+			<if test="visittime != '' and visittime != null">
+				visittime = #{visittime}
+			</if>
+			<if test="visitcase != '' and visitcase != null">
+				,visitcase = #{visitcase}
+			</if>
+			<if test="trackingmode != '' and trackingmode != null">
+				,trackingmode = #{trackingmode}
+			</if>
+			<if test="nexttrackingtime != '' and nexttrackingtime != null">
+				,nexttrackingtime = #{nexttrackingtime}
+			</if>
+			<if test="fremark != '' and fremark != null">
+				,fremark = #{fremark}
+			</if>
+			<if test="stustatus != '' and stustatus != null">
+				,stustatus = #{stustatus}
+			</if>
+		</set>
+		<where>
+			<if test="fid != '' and fid != null">
+				fid = #{fid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 删除跟踪记录 Integer del(List<String> fid); -->
+	<delete id="del">
+		delete from t_follows where fid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<!-- 结果集映射 -->
+	<resultMap type="follows" id="followsMap">
+		<id property="fid" column="fid"/>
+		<result property="sid" column="sid"/>
+		<result property="uid" column="uid"/>
+		<result property="visittime" column="visittime"/>
+		<result property="visitcase" column="visitcase"/>
+		<result property="trackingmode" column="trackingmode"/>
+		<result property="nexttrackingtime" column="nexttrackingtime"/>
+		<result property="fremark" column="fremark"/>
+		<result property="stustatus" column="stustatus"/>
+		<association property="student">
+			<id property="sid" column="sid"/>
+			<result property="sname" column="sname"/>
+		</association>
+	</resultMap>
+
+</mapper>
